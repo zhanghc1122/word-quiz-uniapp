@@ -67,6 +67,11 @@ function goGrade() {
   margin-top: 20rpx;
   box-shadow: 0 8rpx 32rpx rgba(26,26,46,0.08);
 }
+.btn-start:active {
+  background: #D04830;
+  transform: scale(0.96);
+  box-shadow: 0 4rpx 16rpx rgba(26,26,46,0.08);
+}
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-12rpx); }

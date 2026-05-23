@@ -111,7 +111,7 @@ function answer(index) {
       yourAnswer: q.options[index],
       correctAnswer: q.options[q.correctIndex]
     })
-    flashToast(false, '已记入错题本')
+    flashToast(false, '没关系，多练习几次就记住啦！')
   }
 
   setTimeout(() => {
@@ -195,6 +195,7 @@ function confirmQuit() {
   border-radius: 20rpx; font-size: 36rpx; font-weight: 500; color: #1A1A2E;
   text-align: left; transition: all 0.25s;
 }
+.option-btn:active { background: rgba(124,92,191,0.08); transform: scale(0.98); }
 .option-btn.correct { border-color: #2B9E8F; background: rgba(43,158,143,0.08); color: #2B9E8F; }
 .option-btn.wrong { border-color: #D94848; background: rgba(217,72,72,0.08); color: #D94848; }
 .option-btn.disabled { opacity: 0.5; }

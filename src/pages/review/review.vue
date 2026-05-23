@@ -81,7 +81,7 @@ function answer(index) {
   if (index === correctIdx.value) {
     flashToast(true, '')
   } else {
-    flashToast(false, '')
+    flashToast(false, '加油，你一定能记住！')
   }
 
   setTimeout(() => {
@@ -133,6 +133,7 @@ function goHome() {
   padding: 36rpx 40rpx; background: #FFFFFF; border: 3rpx solid #E8E5DF;
   border-radius: 20rpx; font-size: 36rpx; font-weight: 500; color: #1A1A2E; text-align: left;
 }
+.option-btn:active { background: rgba(124,92,191,0.08); transform: scale(0.98); }
 .option-btn.correct { border-color: #2B9E8F; background: rgba(43,158,143,0.08); color: #2B9E8F; }
 .option-btn.wrong { border-color: #D94848; background: rgba(217,72,72,0.08); color: #D94848; }
 .option-btn.disabled { opacity: 0.5; }

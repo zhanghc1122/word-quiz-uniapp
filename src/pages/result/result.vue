@@ -36,8 +36,9 @@
         </view>
       </view>
       <view class="result-actions">
-        <button class="btn-secondary" @tap="goHome">返回首页</button>
-        <button class="btn-primary" @tap="goBattle">再来一局PK</button>
+        <button class="btn-secondary" @tap="goLearn">再学一次</button>
+        <button class="btn-third" @tap="goHome">返回首页</button>
+        <button class="btn-primary" @tap="goBattle">再来一局</button>
       </view>
     </view>
     <Fireworks :active="showFireworks" />
@@ -78,6 +79,7 @@ const message = computed(() => {
 const showFireworks = computed(() => data.value.correct >= 8)
 
 function goHome() { uni.redirectTo({ url: '/pages/home/home' }) }
+function goLearn() { uni.redirectTo({ url: '/pages/learn/learn' }) }
 function goBattle() { uni.redirectTo({ url: '/pages/battle-match/battle-match' }) }
 </script>
 
@@ -128,10 +130,21 @@ function goBattle() { uni.redirectTo({ url: '/pages/battle-match/battle-match' }
 .wrong-word { font-weight: 700; color: #1A1A2E; font-size: 32rpx; }
 .wrong-answer { font-size: 26rpx; color: #D94848; }
 .correct-answer { font-size: 26rpx; color: #2B9E8F; }
-.result-actions { display: flex; gap: 24rpx; margin-top: 24rpx; width: 100%; max-width: 600rpx; }
+.result-actions {
+  display: flex; flex-wrap: wrap; gap: 16rpx; justify-content: center;
+  margin-top: 24rpx; width: 100%; max-width: 600rpx;
+}
 .btn-secondary {
-  flex: 1; background: #FFFFFF; color: #7C5CBF; border: 3rpx solid #E8E5DF;
+  flex: 1; min-width: 200rpx; background: #FFFFFF; color: #7C5CBF; border: 3rpx solid #E8E5DF;
   padding: 32rpx; border-radius: 999rpx; font-size: 34rpx; font-weight: 600;
+}
+.btn-third {
+  flex: 1; min-width: 200rpx; background: transparent; color: #9CA3AF; border: none;
+  font-size: 28rpx; font-weight: 500; padding: 32rpx 24rpx;
+}
+.btn-primary {
+  flex: 1; min-width: 200rpx; background: #7C5CBF; color: #FFFFFF;
+  border: none; padding: 32rpx; border-radius: 999rpx; font-size: 34rpx; font-weight: 700;
 }
 .btn-primary {
   flex: 1; background: #7C5CBF; color: #FFFFFF;

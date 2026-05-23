@@ -16,6 +16,7 @@
         <view class="hp-bar"><view class="hp-fill opp-fill" :style="{ width: (100 - myScore * 10) + '%' }"></view></view>
         <text class="battle-score">{{ oppScore }}</text>
       </view>
+      <view class="btn-back-battle" @tap="confirmQuit"><LIcon name="x" size="40rpx" color="#FFFFFF" /></view>
     </view>
 
     <view class="battle-toolbar">
@@ -137,6 +138,22 @@ function flashCombo() {
 
 function onTimeout() { if (!answered.value) answer(-1) }
 
+function confirmQuit() {
+  if (battleIndex.value > 0 || myScore.value > 0 || oppScore.value > 0) {
+    uni.showModal({
+      title: '提示',
+      content: '确定要退出对战吗？当前进度不会保存。',
+      success: (res) => {
+        if (res.confirm) {
+          uni.redirectTo({ url: '/pages/home/home' })
+        }
+      }
+    })
+  } else {
+    uni.redirectTo({ url: '/pages/home/home' })
+  }
+}
+
 function answer(index) {
   if (answered.value) return
   answered.value = true; selectedIdx.value = index; timerActive.value = false
@@ -147,7 +164,7 @@ function answer(index) {
     if (combo.value > maxCombo.value) maxCombo.value = combo.value
     flashToast(true, ''); flashCombo()
   } else {
-    combo.value = 0; flashToast(false, '已记入错题本')
+    combo.value = 0; flashToast(false, '没关系，再接再厉！')
   }
 
   const aiResult = simulateAiAnswer(battleIndex.value, 10, combo.value, opponentId.value, difficulty.value)
@@ -156,8 +173,8 @@ function answer(index) {
   setTimeout(() => {
     aiResolved.value = true; lastAiCorrect.value = aiResult.correct
     if (aiResult.correct) oppScore.value++
-    const myMsg = iCorrect ? '✓ 你答对了！' : '✗ 你答错了'
-    const oppMsg = aiResult.correct ? `✓ ${opponent.value.name}答对了` : `✗ ${opponent.value.name}答错了`
+    const myMsg = iCorrect ? '✔ 你答对了！' : '✘ 你答错了'
+    const oppMsg = aiResult.correct ? `✔ ${opponent.value.name}答对了` : `✘ ${opponent.value.name}答错了`
     logs.value.push({ text: `${myMsg} | ${oppMsg}`, cls: iCorrect ? 'log-correct' : 'log-wrong' })
     questionReplay.value.push({
       word: q.word.word, myAnswer: index >= 0 ? q.options[index] : '超时',
@@ -214,6 +231,12 @@ function finishBattle() {
 .opp-fill { background: #D94848; }
 .battle-score { color: #FFFFFF; font-size: 48rpx; font-weight: 900; }
 .battle-vs { color: #FFFFFF; font-size: 40rpx; font-weight: 900; }
+.btn-back-battle {
+  position: absolute; right: 32rpx; top: 36rpx;
+  width: 64rpx; height: 64rpx; border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+}
 
 .battle-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 20rpx 40rpx; }
 .battle-round { font-size: 26rpx; color: #6B7280; font-weight: 600; }
@@ -230,6 +253,7 @@ function finishBattle() {
   border-radius: 20rpx; font-size: 34rpx; font-weight: 500; color: #1A1A2E;
   text-align: left; transition: all 0.25s;
 }
+.battle-opt:active { background: rgba(124,92,191,0.08); transform: scale(0.98); }
 .battle-opt.correct { border-color: #2B9E8F; background: rgba(43,158,143,0.08); }
 .battle-opt.wrong { border-color: #D94848; background: rgba(217,72,72,0.08); }
 .battle-opt.disabled { opacity: 0.5; }

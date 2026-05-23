@@ -66,6 +66,10 @@ function pickGrade(g) {
   border-color: #E8573A;
   transform: scale(1.05);
 }
+.grade-card:active {
+  transform: scale(0.96);
+  background: rgba(232,87,58,0.04);
+}
 .grade-num {
   font-size: 80rpx; font-weight: 900; color: #E8573A; line-height: 1;
 }

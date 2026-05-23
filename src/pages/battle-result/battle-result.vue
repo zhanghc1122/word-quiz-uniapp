@@ -54,10 +54,10 @@
           <text class="replay-word">{{ q.word }}</text>
           <view class="replay-scores">
             <text :class="['replay-result', q.myCorrect ? 'replay-correct' : 'replay-wrong']">
-              {{ q.myCorrect ? '✓' : '✗' }} {{ (q.myTime / 1000).toFixed(1) }}s
+              <LIcon :name="q.myCorrect ? 'check' : 'x'" :size="24" :color="q.myCorrect ? '#2B9E8F' : '#D94848'" /> {{ (q.myTime / 1000).toFixed(1) }}s
             </text>
             <text :class="['replay-result', q.oppCorrect ? 'replay-correct' : 'replay-wrong']">
-              {{ q.oppCorrect ? '✓' : '✗' }} {{ (q.oppTime / 1000).toFixed(1) }}s
+              <LIcon :name="q.oppCorrect ? 'check' : 'x'" :size="24" :color="q.oppCorrect ? '#2B9E8F' : '#D94848'" /> {{ (q.oppTime / 1000).toFixed(1) }}s
             </text>
           </view>
         </view>
@@ -186,9 +186,13 @@ function goBattle() { uni.redirectTo({ url: '/pages/battle-match/battle-match' }
 .legend-text { font-size: 26rpx; color: #9CA3AF; }
 
 .result-actions { display: flex; gap: 24rpx; margin-top: 24rpx; width: 100%; max-width: 600rpx; }
+.btn-secondary:active { background: rgba(232,87,58,0.04); transform: scale(0.98); }
 .btn-secondary {
   flex: 1; background: #FFFFFF; color: #E8573A; border: 3rpx solid #E8E5DF;
   padding: 32rpx; border-radius: 999rpx; font-size: 34rpx; font-weight: 600;
+}
+.btn-primary:active {
+  background: #D04830; transform: scale(0.98); box-shadow: 0 4rpx 16rpx rgba(26,26,46,0.08);
 }
 .btn-primary {
   flex: 1; background: #E8573A; color: #FFFFFF;

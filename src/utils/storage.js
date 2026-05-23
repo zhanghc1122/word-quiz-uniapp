@@ -116,6 +116,26 @@ export function saveBattleResult(matchData) {
 
   // Also update legacy grade stats
   if (matchData.won) saveBattleWin(matchData.grade || 3)
+
+  // Update grade learning stats
+  const stats = loadStats()
+  const gradeKey = `g${matchData.grade || 3}`
+  if (!stats[gradeKey]) stats[gradeKey] = { learned: 0, mastered: 0, wins: 0 }
+  stats[gradeKey].learned = (stats[gradeKey].learned || 0) + 1
+  stats[gradeKey].mastered = (stats[gradeKey].mastered || 0) + (matchData.myScore || 0)
+
+  // Save wrong words to review book
+  if (matchData.questions && matchData.questions.length > 0) {
+    const wrongKey = `wrong_${gradeKey}`
+    if (!stats[wrongKey]) stats[wrongKey] = []
+    matchData.questions.forEach(q => {
+      if (!q.myCorrect && q.word && !stats[wrongKey].includes(q.word)) {
+        stats[wrongKey].push(q.word)
+      }
+    })
+  }
+
+  saveStats(stats)
 }
 
 export function loadBattleHistory(limit) {
