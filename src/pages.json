@@ -1,0 +1,20 @@
+{
+  "pages": [
+    { "path": "pages/splash/splash", "style": { "navigationStyle": "custom", "app-plus": { "titleNView": false } } },
+    { "path": "pages/grade/grade", "style": { "navigationStyle": "custom" } },
+    { "path": "pages/home/home", "style": { "navigationStyle": "custom" } },
+    { "path": "pages/learn/learn", "style": { "navigationStyle": "custom" } },
+    { "path": "pages/quiz/quiz", "style": { "navigationStyle": "custom" } },
+    { "path": "pages/battle-match/battle-match", "style": { "navigationStyle": "custom" } },
+    { "path": "pages/battle/battle", "style": { "navigationStyle": "custom" } },
+    { "path": "pages/result/result", "style": { "navigationStyle": "custom" } },
+    { "path": "pages/battle-result/battle-result", "style": { "navigationStyle": "custom" } },
+    { "path": "pages/review/review", "style": { "navigationStyle": "custom" } }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "单词大闯关",
+    "navigationBarBackgroundColor": "#F8F9FD",
+    "backgroundColor": "#F8F9FD"
+  }
+}
