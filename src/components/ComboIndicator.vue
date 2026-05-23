@@ -39,17 +39,17 @@ const comboLabel = computed(() => {
 }
 .combo-text { font-size: 48rpx; font-weight: 900; color: #fff; }
 .level-normal {
-  background: linear-gradient(to right, #66BB6A, #A5D6A7);
-  box-shadow: 0 12rpx 40rpx rgba(102, 187, 106, 0.5);
+  background: #2B9E8F;
+  box-shadow: 0 8rpx 32rpx rgba(26,26,46,0.08);
 }
 .level-fire {
-  background: linear-gradient(to right, #FFD54F, #FF8A65);
-  box-shadow: 0 12rpx 40rpx rgba(255, 138, 101, 0.5);
+  background: #F5A623;
+  box-shadow: 0 8rpx 32rpx rgba(26,26,46,0.08);
 }
 .level-gold {
-  background: linear-gradient(to right, #FFD54F, #EF5350);
-  box-shadow: 0 16rpx 60rpx rgba(255, 213, 79, 0.6);
-  animation: comboSlideIn 1.2s cubic-bezier(0.2, 0.8, 0.3, 1) forwards, glowPulse 0.4s ease-in-out infinite alternate;
+  background: #E8573A;
+  box-shadow: 0 8rpx 32rpx rgba(26,26,46,0.08);
+  animation: comboSlideIn 1.2s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
 }
 @keyframes comboSlideIn {
   0%   { transform: translateX(-200rpx) scale(0.5); opacity: 0; }
@@ -57,9 +57,5 @@ const comboLabel = computed(() => {
   30%  { transform: scale(1); opacity: 1; }
   75%  { transform: scale(1); opacity: 1; }
   100% { transform: scale(0.8) translateY(-60rpx); opacity: 0; }
-}
-@keyframes glowPulse {
-  from { box-shadow: 0 16rpx 60rpx rgba(255, 213, 79, 0.4); }
-  to   { box-shadow: 0 16rpx 80rpx rgba(255, 213, 79, 0.8); }
 }
 </style>

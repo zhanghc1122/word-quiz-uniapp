@@ -6,6 +6,6 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 @import './uni.scss';
 </style>

@@ -23,15 +23,15 @@ const displaySeconds = computed(() => Math.ceil(remaining.value / 10))
 const fraction = computed(() => remaining.value / (props.duration * 10))
 
 const currentColor = computed(() => {
-  if (fraction.value > 0.5) return '#66BB6A'
-  if (fraction.value > 0.25) return '#FFD54F'
-  return '#EF5350'
+  if (fraction.value > 0.5) return '#2B9E8F'
+  if (fraction.value > 0.25) return '#F5A623'
+  return '#D94848'
 })
 
 const ringStyle = computed(() => {
   const deg = fraction.value * 360
   return {
-    background: `conic-gradient(${currentColor.value} ${deg}deg, #F0F0F0 ${deg}deg)`,
+    background: `conic-gradient(${currentColor.value} ${deg}deg, #E8E5DF ${deg}deg)`,
   }
 })
 

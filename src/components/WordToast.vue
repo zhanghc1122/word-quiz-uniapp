@@ -1,7 +1,7 @@
 <template>
   <view v-if="visible" class="toast-overlay">
     <view :class="['toast', isCorrect ? 'correct' : 'wrong']">
-      <text class="toast-emoji">{{ emoji }}</text>
+      <text class="toast-symbol">{{ isCorrect ? '✓' : '✗' }}</text>
       <text class="toast-text">{{ text }}</text>
     </view>
   </view>
@@ -10,31 +10,21 @@
 <script setup>
 import { ref, watch } from 'vue'
 
+const TOAST_CORRECT = ['答对啦！', '太棒了！', '真厉害！', '满分！', '完美！']
+
 const props = defineProps({
   visible: Boolean,
   isCorrect: { type: Boolean, default: true },
   customText: { type: String, default: '' }
 })
 
-const TOAST_CORRECT = [
-  { emoji: '🎉', text: '答对啦！' },
-  { emoji: '🌟', text: '太棒了！' },
-  { emoji: '👏', text: '真厉害！' },
-  { emoji: '💯', text: '满分！' },
-  { emoji: '✨', text: '完美！' },
-]
-
-const emoji = ref('')
 const text = ref('')
 
 watch(() => props.visible, (val) => {
   if (val) {
     if (props.isCorrect) {
-      const pick = TOAST_CORRECT[Math.floor(Math.random() * TOAST_CORRECT.length)]
-      emoji.value = pick.emoji
-      text.value = props.customText || pick.text
+      text.value = props.customText || TOAST_CORRECT[Math.floor(Math.random() * TOAST_CORRECT.length)]
     } else {
-      emoji.value = '📝'
       text.value = props.customText || '已记入错题本'
     }
   }
@@ -54,14 +44,14 @@ watch(() => props.visible, (val) => {
   animation: toastPop 1s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
 }
 .toast.correct {
-  background: linear-gradient(135deg, #66BB6A, #A5D6A7);
-  box-shadow: 0 16rpx 60rpx rgba(102, 187, 106, 0.5);
+  background: #2B9E8F;
+  box-shadow: 0 8rpx 32rpx rgba(26,26,46,0.08);
 }
 .toast.wrong {
-  background: linear-gradient(135deg, #EF5350, #EF9A9A);
-  box-shadow: 0 16rpx 60rpx rgba(239, 83, 80, 0.5);
+  background: #D94848;
+  box-shadow: 0 8rpx 32rpx rgba(26,26,46,0.08);
 }
-.toast-emoji { font-size: 80rpx; margin-bottom: 8rpx; }
+.toast-symbol { font-size: 96rpx; color: #fff; }
 .toast-text { font-size: 36rpx; font-weight: 800; color: #fff; }
 @keyframes toastPop {
   0%   { transform: scale(0); opacity: 0; }

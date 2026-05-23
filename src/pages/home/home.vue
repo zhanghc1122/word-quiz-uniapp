@@ -1,13 +1,13 @@
 <template>
   <view class="page">
     <view class="header">
-      <view class="btn-back" @tap="goGrade"><text class="back-arrow">‹</text></view>
+      <view class="btn-back" @tap="goGrade"><LIcon name="arrow-left" size="48rpx" /></view>
       <text class="header-title">{{ gradeTitle }}</text>
       <view class="spacer"></view>
     </view>
 
     <view class="user-row">
-      <view class="avatar"><text>🧒</text></view>
+      <view class="avatar-circle"><text class="avatar-letter">学</text></view>
       <view class="user-info">
         <text class="user-name">小学霸</text>
         <text class="user-level">{{ playerRank.icon }} {{ playerRank.name }} · {{ levelText }}</text>
@@ -15,23 +15,31 @@
     </view>
 
     <view class="menu-grid">
-      <view class="menu-card menu-learn" @tap="goLearn">
-        <text class="menu-icon">📖</text>
+      <view class="menu-card" @tap="goLearn">
+        <view class="menu-icon-circle" style="background: rgba(124,92,191,0.08);">
+          <LIcon name="book-open" color="#7C5CBF" size="36rpx" />
+        </view>
         <text class="menu-title">今日学词</text>
         <text class="menu-desc">{{ todayDesc }}</text>
       </view>
-      <view class="menu-card menu-quiz" @tap="goQuiz">
-        <text class="menu-icon">✏️</text>
+      <view class="menu-card" @tap="goQuiz">
+        <view class="menu-icon-circle" style="background: rgba(124,92,191,0.08);">
+          <LIcon name="pencil" color="#7C5CBF" size="36rpx" />
+        </view>
         <text class="menu-title">单词测验</text>
         <text class="menu-desc">检验学习成果</text>
       </view>
-      <view class="menu-card menu-battle" @tap="goBattle">
-        <text class="menu-icon">⚔️</text>
+      <view class="menu-card" @tap="goBattle">
+        <view class="menu-icon-circle" style="background: rgba(232,87,58,0.08);">
+          <LIcon name="swords" color="#E8573A" size="36rpx" />
+        </view>
         <text class="menu-title">PK对战</text>
         <text class="menu-desc">和AI比拼</text>
       </view>
-      <view class="menu-card menu-review" @tap="goReview">
-        <text class="menu-icon">🔄</text>
+      <view class="menu-card" @tap="goReview">
+        <view class="menu-icon-circle" style="background: rgba(43,158,143,0.08);">
+          <LIcon name="rotate-ccw" color="#2B9E8F" size="36rpx" />
+        </view>
         <text class="menu-title">错题复习</text>
         <text class="menu-desc">{{ wrongDesc }}</text>
       </view>
@@ -44,6 +52,7 @@ import { ref, computed } from 'vue'
 import { GRADE_NAMES, LEVELS, getTodayKey } from '@/utils/helpers'
 import { loadStats, getPlayerRank } from '@/utils/storage'
 import { onShow } from '@dcloudio/uni-app'
+import LIcon from '@/components/LIcon.vue'
 
 const grade = ref(uni.getStorageSync('currentGrade') || 3)
 const gradeTitle = computed(() => GRADE_NAMES[grade.value])
@@ -96,50 +105,47 @@ onShow(() => { refreshData() })
 </script>
 
 <style scoped>
-.page { min-height: 100vh; background: #FFF8E1; padding-bottom: 40rpx; }
+.page { min-height: 100vh; background: #F7F5F0; padding-bottom: 40rpx; }
 .header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 32rpx 40rpx;
 }
 .btn-back {
-  width: 80rpx; height: 80rpx; background: #fff; border-radius: 50%;
+  width: 80rpx; height: 80rpx; background: #FFFFFF; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4rpx 16rpx rgba(255,138,101,0.12);
+  box-shadow: 0 2rpx 8rpx rgba(26,26,46,0.04);
 }
-.back-arrow { font-size: 48rpx; font-weight: bold; color: #37474F; }
-.header-title { font-size: 40rpx; font-weight: 700; color: #37474F; }
+.back-arrow { display: none; }
+.header-title { font-size: 40rpx; font-weight: 700; color: #1A1A2E; }
 .spacer { width: 80rpx; }
 
 .user-row {
   display: flex; align-items: center; gap: 24rpx; padding: 24rpx 40rpx 32rpx;
 }
-.avatar {
+.avatar-circle {
   width: 96rpx; height: 96rpx; border-radius: 50%;
-  background: linear-gradient(135deg, #FFD54F, #FFB74D);
-  display: flex; align-items: center; justify-content: center; font-size: 48rpx;
+  background: #E8573A;
+  display: flex; align-items: center; justify-content: center;
 }
+.avatar-letter { font-size: 40rpx; font-weight: 700; color: #FFFFFF; }
 .user-info { display: flex; flex-direction: column; gap: 4rpx; }
-.user-name { font-size: 34rpx; font-weight: 700; color: #37474F; }
-.user-level { font-size: 26rpx; color: #FF8A65; font-weight: 600; }
+.user-name { font-size: 34rpx; font-weight: 700; color: #1A1A2E; }
+.user-level { font-size: 26rpx; color: #6B7280; font-weight: 600; }
 
 .menu-grid {
   display: grid; grid-template-columns: repeat(2, 1fr); gap: 24rpx; padding: 8rpx 40rpx;
 }
 .menu-card {
-  background: #fff; border-radius: 40rpx; padding: 40rpx 28rpx;
+  background: #FFFFFF; border-radius: 28rpx; padding: 40rpx 28rpx;
   display: flex; flex-direction: column; align-items: center; gap: 12rpx;
-  box-shadow: 0 8rpx 40rpx rgba(255,138,101,0.12);
-  border-top: 8rpx solid transparent;
+  box-shadow: 0 4rpx 16rpx rgba(26,26,46,0.06);
   transition: transform 0.2s;
 }
 .menu-card:active { transform: scale(0.96); }
-.menu-learn { border-top-color: #42A5F5; }
-.menu-quiz { border-top-color: #AB47BC; }
-.menu-battle { border-top-color: #FF7043; }
-.menu-review { border-top-color: #26A69A; }
-.menu-icon {
-  font-size: 72rpx;
+.menu-icon-circle {
+  width: 80rpx; height: 80rpx; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
 }
-.menu-title { font-size: 32rpx; font-weight: 700; color: #37474F; }
-.menu-desc { font-size: 26rpx; color: #78909C; }
+.menu-title { font-size: 32rpx; font-weight: 700; color: #1A1A2E; }
+.menu-desc { font-size: 26rpx; color: #6B7280; }
 </style>

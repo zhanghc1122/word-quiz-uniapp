@@ -1,7 +1,7 @@
 <template>
   <view class="page">
     <view class="header">
-      <view class="btn-back" @tap="confirmQuit"><text class="back-arrow">‹</text></view>
+      <view class="btn-back" @tap="confirmQuit"><LIcon name="arrow-left" size="48rpx" /></view>
       <text class="header-title">单词测验</text>
       <text class="word-counter">{{ quizIndex + 1 }} / 10</text>
     </view>
@@ -9,9 +9,17 @@
       <view class="progress-fill" :style="{ width: (quizIndex + 1) * 10 + '%' }"></view>
     </view>
     <view class="score-bar">
-      <text class="correct-text">✅ {{ correctCount }}</text>
-      <text class="wrong-text">❌ {{ wrongCount }}</text>
-      <text class="timer-text">⏱ {{ timerText }}</text>
+      <view class="score-item">
+        <view class="score-dot dot-correct"></view>
+        <text class="score-text text-correct">{{ correctCount }}</text>
+      </view>
+      <view class="score-item">
+        <view class="score-dot dot-wrong"></view>
+        <text class="score-text text-wrong">{{ wrongCount }}</text>
+      </view>
+      <view class="score-item">
+        <text class="score-text text-muted">{{ timerText }}</text>
+      </view>
     </view>
     <view class="question-box">
       <text class="question-prompt">{{ currentQuestion.word.word }} 的意思是？</text>
@@ -34,6 +42,7 @@ import { wordsDB } from '@/utils/words'
 import { getDaySeed, seededShuffle } from '@/utils/helpers'
 import { saveQuizResult } from '@/utils/storage'
 import WordToast from '@/components/WordToast.vue'
+import LIcon from '@/components/LIcon.vue'
 
 const grade = ref(uni.getStorageSync('currentGrade') || 3)
 const allWords = wordsDB[grade.value] || []
@@ -142,46 +151,51 @@ function confirmQuit() {
 </script>
 
 <style scoped>
-.page { min-height: 100vh; background: #FFF8E1; }
+.page { min-height: 100vh; background: #F7F5F0; }
 .header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 32rpx 40rpx;
 }
 .btn-back {
-  width: 80rpx; height: 80rpx; background: #fff; border-radius: 50%;
+  width: 80rpx; height: 80rpx; background: #FFFFFF; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4rpx 16rpx rgba(171,71,188,0.12);
+  box-shadow: 0 2rpx 8rpx rgba(26,26,46,0.04);
 }
-.back-arrow { font-size: 48rpx; font-weight: bold; color: #37474F; }
-.header-title { font-size: 40rpx; font-weight: 700; color: #37474F; }
+.back-arrow { display: none; }
+.header-title { font-size: 40rpx; font-weight: 700; color: #1A1A2E; }
 .word-counter {
-  font-size: 28rpx; color: #AB47BC; font-weight: 600;
-  background: rgba(171,71,188,0.1); padding: 8rpx 24rpx; border-radius: 40rpx;
+  font-size: 28rpx; color: #7C5CBF; font-weight: 600;
+  background: rgba(124,92,191,0.08); padding: 8rpx 24rpx; border-radius: 999rpx;
 }
 .progress-bar {
-  height: 12rpx; background: rgba(171,71,188,0.1); margin: 0 40rpx; border-radius: 6rpx; overflow: hidden;
+  height: 12rpx; background: #E8E5DF; margin: 0 40rpx; border-radius: 6rpx; overflow: hidden;
 }
 .progress-fill {
-  height: 100%; background: linear-gradient(to right, #AB47BC, #CE93D8); border-radius: 6rpx; transition: width 0.3s;
+  height: 100%; background: #7C5CBF; border-radius: 6rpx; transition: width 0.3s;
 }
 .score-bar {
-  display: flex; justify-content: space-between; padding: 24rpx 40rpx; font-size: 30rpx; font-weight: 600;
+  display: flex; justify-content: space-between; padding: 24rpx 40rpx; align-items: center;
 }
-.correct-text { color: #66BB6A; }
-.wrong-text { color: #EF5350; }
-.timer-text { color: #AB47BC; }
+.score-item { display: flex; align-items: center; gap: 8rpx; }
+.score-dot { width: 16rpx; height: 16rpx; border-radius: 50%; }
+.dot-correct { background: #2B9E8F; }
+.dot-wrong { background: #D94848; }
+.score-text { font-size: 30rpx; font-weight: 600; }
+.text-correct { color: #2B9E8F; }
+.text-wrong { color: #D94848; }
+.text-muted { color: #9CA3AF; }
 .question-box {
-  margin: 16rpx 40rpx 40rpx; padding: 56rpx 40rpx; background: #fff; border-radius: 40rpx;
-  box-shadow: 0 8rpx 40rpx rgba(171,71,188,0.1); text-align: center;
+  margin: 16rpx 40rpx 40rpx; padding: 56rpx 40rpx; background: #FFFFFF; border-radius: 28rpx;
+  box-shadow: 0 8rpx 32rpx rgba(26,26,46,0.08); text-align: center;
 }
-.question-prompt { font-size: 48rpx; font-weight: 700; color: #37474F; line-height: 1.4; }
+.question-prompt { font-size: 48rpx; font-weight: 700; color: #1A1A2E; line-height: 1.4; }
 .options { display: flex; flex-direction: column; gap: 24rpx; padding: 0 40rpx; }
 .option-btn {
-  padding: 36rpx 40rpx; background: #fff; border: 4rpx solid #F0E6F6;
-  border-radius: 24rpx; font-size: 36rpx; font-weight: 500; color: #37474F;
+  padding: 36rpx 40rpx; background: #FFFFFF; border: 3rpx solid #E8E5DF;
+  border-radius: 20rpx; font-size: 36rpx; font-weight: 500; color: #1A1A2E;
   text-align: left; transition: all 0.25s;
 }
-.option-btn.correct { border-color: #66BB6A; background: rgba(102,187,106,0.1); color: #66BB6A; }
-.option-btn.wrong { border-color: #EF5350; background: rgba(239,83,80,0.1); color: #EF5350; }
+.option-btn.correct { border-color: #2B9E8F; background: rgba(43,158,143,0.08); color: #2B9E8F; }
+.option-btn.wrong { border-color: #D94848; background: rgba(217,72,72,0.08); color: #D94848; }
 .option-btn.disabled { opacity: 0.5; }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <view :class="['opp-card', selected ? 'selected' : '', compact ? 'compact' : 'detail']" @tap="$emit('select')">
-    <view class="opp-avatar-wrap">
-      <text class="opp-avatar">{{ opponent.avatar }}</text>
+    <view class="opp-avatar" :style="{ background: opponent.avatar.color }">
+      <text class="opp-avatar-text">{{ opponent.avatar.initial }}</text>
     </view>
     <view class="opp-info">
       <text class="opp-name">{{ opponent.name }}</text>
@@ -34,8 +34,8 @@ defineEmits(['select'])
 
 const strategy = computed(() => AI_STRATEGY[props.opponent.personality] || AI_STRATEGY.steady)
 const personalityColor = computed(() => {
-  const colors = { aggressive: 'rgba(239,83,80,0.12)', steady: 'rgba(102,187,106,0.12)', tricky: 'rgba(255,213,79,0.15)' }
-  return colors[props.opponent.personality] || 'rgba(255,138,101,0.1)'
+  const colors = { aggressive: 'rgba(217,72,72,0.08)', steady: 'rgba(43,158,143,0.08)', tricky: 'rgba(245,166,35,0.08)' }
+  return colors[props.opponent.personality] || 'rgba(107,114,128,0.08)'
 })
 const difficultyColors = computed(() => {
   const map = {}
@@ -47,29 +47,29 @@ const winRateText = computed(() => props.winRate || '暂无记录')
 
 <style scoped>
 .opp-card {
-  background: #fff; border-radius: 40rpx; padding: 28rpx;
-  box-shadow: 0 8rpx 40rpx rgba(255,138,101,0.1);
-  border: 4rpx solid transparent; transition: all 0.3s;
+  background: #FFFFFF; border-radius: 28rpx; padding: 28rpx;
+  box-shadow: 0 2rpx 8rpx rgba(26,26,46,0.04);
+  border: 3rpx solid transparent; transition: all 0.3s;
   display: flex; flex-direction: column; align-items: center; gap: 16rpx;
 }
 .opp-card.selected {
-  border-color: #FF8A65;
-  background: linear-gradient(135deg, rgba(255,138,101,0.04), rgba(255,183,77,0.08));
+  border: 3rpx solid #E8573A;
+  background: #FFFFFF;
 }
 .opp-card.compact { min-width: 240rpx; padding: 24rpx 20rpx; }
-.opp-avatar-wrap {
-  width: 120rpx; height: 120rpx; background: #FFF8E1; border-radius: 50%;
+.opp-avatar {
+  width: 80rpx; height: 80rpx; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
 }
-.opp-avatar { font-size: 64rpx; }
+.opp-avatar-text { font-size: 32rpx; font-weight: 700; color: #FFFFFF; }
 .opp-info { display: flex; flex-direction: column; align-items: center; gap: 8rpx; }
-.opp-name { font-size: 30rpx; font-weight: 700; color: #37474F; }
+.opp-name { font-size: 30rpx; font-weight: 700; color: #1A1A2E; }
 .opp-badges { display: flex; gap: 8rpx; }
 .badge-personality {
-  font-size: 22rpx; padding: 4rpx 16rpx; border-radius: 20rpx; font-weight: 600; color: #37474F;
+  font-size: 22rpx; padding: 4rpx 16rpx; border-radius: 999rpx; font-weight: 600; color: #1A1A2E;
 }
-.opp-winrate { font-size: 26rpx; color: #78909C; }
+.opp-winrate { font-size: 26rpx; color: #6B7280; }
 .opp-desc { display: flex; flex-direction: column; align-items: center; gap: 8rpx; }
-.opp-desc-text { font-size: 26rpx; color: #78909C; }
+.opp-desc-text { font-size: 26rpx; color: #6B7280; }
 .opp-difficulty-dots { display: flex; gap: 12rpx; font-size: 26rpx; }
 </style>

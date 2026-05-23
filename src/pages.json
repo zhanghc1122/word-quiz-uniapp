@@ -14,7 +14,7 @@
   "globalStyle": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "单词大闯关",
-    "navigationBarBackgroundColor": "#F8F9FD",
-    "backgroundColor": "#F8F9FD"
+    "navigationBarBackgroundColor": "#F7F5F0",
+    "backgroundColor": "#F7F5F0"
   }
 }

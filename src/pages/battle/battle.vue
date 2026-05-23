@@ -2,14 +2,16 @@
   <view class="page">
     <view class="battle-header">
       <view class="battle-player">
-        <view class="battle-avatar me-avatar"><text>🧒</text></view>
+        <view class="battle-avatar me-avatar"><text class="avatar-letter">学</text></view>
         <text class="battle-name white">我</text>
         <view class="hp-bar"><view class="hp-fill me-fill" :style="{ width: (100 - oppScore * 10) + '%' }"></view></view>
         <text class="battle-score">{{ myScore }}</text>
       </view>
       <text class="battle-vs">VS</text>
       <view class="battle-player">
-        <view class="battle-avatar opp-avatar"><text>{{ opponent.avatar }}</text></view>
+        <view class="battle-avatar opp-avatar" :style="{ background: opponent.avatar.color }">
+          <text class="avatar-letter">{{ opponent.avatar.initial }}</text>
+        </view>
         <text class="battle-name white">{{ opponent.name }}</text>
         <view class="hp-bar"><view class="hp-fill opp-fill" :style="{ width: (100 - myScore * 10) + '%' }"></view></view>
         <text class="battle-score">{{ oppScore }}</text>
@@ -59,6 +61,7 @@ import WordToast from '@/components/WordToast.vue'
 import ComboIndicator from '@/components/ComboIndicator.vue'
 import AiThinking from '@/components/AiThinking.vue'
 import BattleTimer from '@/components/BattleTimer.vue'
+import LIcon from '@/components/LIcon.vue'
 
 const grade = ref(uni.getStorageSync('currentGrade') || 3)
 const allWords = wordsDB[grade.value] || []
@@ -66,7 +69,7 @@ const seed = Date.now()
 
 const opponentId = ref('')
 const difficulty = ref('medium')
-const opponent = ref({ id: 'zhi', name: '小智同学', avatar: '🤖', personality: 'steady' })
+const opponent = ref({ id: 'zhi', name: '小智同学', avatar: { initial: '智', color: '#7C5CBF' }, personality: 'steady' })
 
 const questions = ref([])
 const battleIndex = ref(0)
@@ -153,8 +156,8 @@ function answer(index) {
   setTimeout(() => {
     aiResolved.value = true; lastAiCorrect.value = aiResult.correct
     if (aiResult.correct) oppScore.value++
-    const myMsg = iCorrect ? '✅ 你答对了！' : '❌ 你答错了'
-    const oppMsg = aiResult.correct ? `✅ ${opponent.value.name}答对了` : `❌ ${opponent.value.name}答错了`
+    const myMsg = iCorrect ? '✓ 你答对了！' : '✗ 你答错了'
+    const oppMsg = aiResult.correct ? `✓ ${opponent.value.name}答对了` : `✗ ${opponent.value.name}答错了`
     logs.value.push({ text: `${myMsg} | ${oppMsg}`, cls: iCorrect ? 'log-correct' : 'log-wrong' })
     questionReplay.value.push({
       word: q.word.word, myAnswer: index >= 0 ? q.options[index] : '超时',
@@ -187,55 +190,57 @@ function finishBattle() {
 </script>
 
 <style scoped>
-.page { min-height: 100vh; background: #FFF8E1; }
+.page { min-height: 100vh; background: #F7F5F0; }
 .battle-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 36rpx 32rpx; background: linear-gradient(135deg, #FF7043, #FF8A65);
+  padding: 36rpx 32rpx; background: #E8573A;
 }
 .battle-player { display: flex; flex-direction: column; align-items: center; gap: 12rpx; flex: 1; }
 .battle-avatar {
   width: 104rpx; height: 104rpx; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center; font-size: 52rpx;
-  background: rgba(255,255,255,0.25); border: 6rpx solid rgba(255,255,255,0.4);
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.25);
 }
-.white { color: #fff; }
+.me-avatar { background: rgba(255,255,255,0.25); }
+.avatar-letter { font-size: 40rpx; font-weight: 700; color: #FFFFFF; }
+.white { color: #FFFFFF; }
 .battle-name { font-size: 26rpx; font-weight: 600; }
 .hp-bar {
   width: 100%; max-width: 220rpx; height: 16rpx;
   background: rgba(255,255,255,0.25); border-radius: 8rpx; overflow: hidden;
 }
 .hp-fill { height: 100%; border-radius: 8rpx; transition: width 0.5s; }
-.me-fill { background: linear-gradient(to right, #A5D6A7, #66BB6A); }
-.opp-fill { background: linear-gradient(to right, #EF9A9A, #EF5350); }
-.battle-score { color: #FFD54F; font-size: 48rpx; font-weight: 900; }
-.battle-vs { color: #FFD54F; font-size: 40rpx; font-weight: 900; }
+.me-fill { background: #2B9E8F; }
+.opp-fill { background: #D94848; }
+.battle-score { color: #FFFFFF; font-size: 48rpx; font-weight: 900; }
+.battle-vs { color: #FFFFFF; font-size: 40rpx; font-weight: 900; }
 
 .battle-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 20rpx 40rpx; }
-.battle-round { font-size: 26rpx; color: #78909C; font-weight: 600; }
+.battle-round { font-size: 26rpx; color: #6B7280; font-weight: 600; }
 
 .battle-question {
-  margin: 16rpx 40rpx; padding: 40rpx; background: #fff; border-radius: 40rpx;
-  box-shadow: 0 8rpx 40rpx rgba(255,112,67,0.1); text-align: center;
+  margin: 16rpx 40rpx; padding: 40rpx; background: #FFFFFF; border-radius: 28rpx;
+  box-shadow: 0 8rpx 32rpx rgba(26,26,46,0.08); text-align: center;
 }
-.battle-prompt { font-size: 44rpx; font-weight: 700; color: #37474F; }
+.battle-prompt { font-size: 44rpx; font-weight: 700; color: #1A1A2E; }
 
 .battle-options { display: flex; flex-direction: column; gap: 20rpx; padding: 0 40rpx; }
 .battle-opt {
-  padding: 32rpx 36rpx; background: #fff; border: 4rpx solid #FBE9E7;
-  border-radius: 24rpx; font-size: 34rpx; font-weight: 500; color: #37474F;
+  padding: 32rpx 36rpx; background: #FFFFFF; border: 3rpx solid #E8E5DF;
+  border-radius: 20rpx; font-size: 34rpx; font-weight: 500; color: #1A1A2E;
   text-align: left; transition: all 0.25s;
 }
-.battle-opt.correct { border-color: #66BB6A; background: rgba(102,187,106,0.1); }
-.battle-opt.wrong { border-color: #EF5350; background: rgba(239,83,80,0.1); }
+.battle-opt.correct { border-color: #2B9E8F; background: rgba(43,158,143,0.08); }
+.battle-opt.wrong { border-color: #D94848; background: rgba(217,72,72,0.08); }
 .battle-opt.disabled { opacity: 0.5; }
 
 .ai-thinking-area { display: flex; justify-content: flex-end; padding: 16rpx 40rpx 0; }
 
 .battle-log {
-  margin: 24rpx 40rpx; padding: 20rpx 28rpx; background: #fff;
-  border-radius: 24rpx; max-height: 120rpx; font-size: 26rpx;
-  box-shadow: 0 8rpx 40rpx rgba(255,112,67,0.08);
+  margin: 24rpx 40rpx; padding: 20rpx 28rpx; background: #FFFFFF;
+  border-radius: 20rpx; max-height: 120rpx; font-size: 26rpx;
+  box-shadow: 0 2rpx 8rpx rgba(26,26,46,0.04);
 }
-.log-correct { color: #66BB6A; }
-.log-wrong { color: #EF5350; }
+.log-correct { color: #2B9E8F; }
+.log-wrong { color: #D94848; }
 </style>

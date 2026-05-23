@@ -1,7 +1,7 @@
 <template>
   <view class="page">
     <view class="header">
-      <view class="btn-back" @tap="goBack"><text class="back-arrow">‹</text></view>
+      <view class="float-back" @tap="goBack"><LIcon name="arrow-left" size="48rpx" /></view>
       <text class="header-title">选择年级</text>
       <view class="spacer"></view>
     </view>
@@ -21,6 +21,7 @@
 <script setup>
 import { ref } from 'vue'
 import { GRADE_NAMES } from '@/utils/helpers'
+import LIcon from '@/components/LIcon.vue'
 
 const gradeNames = GRADE_NAMES
 const selectedGrade = ref(null)
@@ -39,35 +40,34 @@ function pickGrade(g) {
 </script>
 
 <style scoped>
-.page { min-height: 100vh; background: #FFF8E1; padding-bottom: 40rpx; }
+.page { min-height: 100vh; background: #F7F5F0; padding-bottom: 40rpx; }
 .header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 32rpx 40rpx; position: sticky; top: 0; background: #FFF8E1; z-index: 10;
+  padding: 32rpx 40rpx; position: sticky; top: 0; background: #F7F5F0; z-index: 10;
 }
 .btn-back {
-  width: 80rpx; height: 80rpx; background: #fff; border-radius: 50%;
+  width: 80rpx; height: 80rpx; background: #FFFFFF; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4rpx 16rpx rgba(255,138,101,0.12);
+  box-shadow: 0 2rpx 8rpx rgba(26,26,46,0.04);
 }
-.back-arrow { font-size: 48rpx; font-weight: bold; color: #37474F; }
-.header-title { font-size: 40rpx; font-weight: 700; color: #37474F; }
+.back-arrow { display: none; }
+.header-title { font-size: 40rpx; font-weight: 700; color: #1A1A2E; }
 .spacer { width: 80rpx; }
 .grade-grid {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 24rpx; padding: 32rpx 40rpx;
 }
 .grade-card {
-  background: #fff; border-radius: 40rpx; padding: 48rpx 24rpx;
+  background: #FFFFFF; border-radius: 28rpx; padding: 48rpx 24rpx;
   display: flex; flex-direction: column; align-items: center; gap: 12rpx;
-  box-shadow: 0 8rpx 40rpx rgba(255,138,101,0.12);
-  border: 4rpx solid transparent; transition: all 0.3s;
+  box-shadow: 0 4rpx 16rpx rgba(26,26,46,0.06);
+  border: 3rpx solid transparent; transition: all 0.3s;
 }
 .grade-card.selected {
-  border-color: #FF8A65;
-  background: linear-gradient(135deg, rgba(255,138,101,0.08), rgba(255,183,77,0.12));
+  border-color: #E8573A;
   transform: scale(1.05);
 }
 .grade-num {
-  font-size: 80rpx; font-weight: 900; color: #FF8A65; line-height: 1;
+  font-size: 80rpx; font-weight: 900; color: #E8573A; line-height: 1;
 }
-.grade-label { font-size: 30rpx; font-weight: 600; color: #37474F; }
+.grade-label { font-size: 30rpx; font-weight: 600; color: #1A1A2E; }
 </style>

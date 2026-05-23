@@ -1,0 +1,8 @@
+{
+  "appId": "com.wordquiz.app",
+  "appName": "单词大闯关",
+  "webDir": "dist/build/h5",
+  "server": {
+    "androidScheme": "https"
+  }
+}

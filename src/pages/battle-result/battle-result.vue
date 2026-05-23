@@ -9,7 +9,9 @@
         <text class="rank-up-text">段位提升！</text>
       </view>
 
-      <text class="result-icon">{{ icon }}</text>
+      <view :class="['result-circle', data.won ? 'circle-win' : data.myScore === data.oppScore ? 'circle-draw' : 'circle-lose']">
+        <LIcon v-if="data.won" name="check" :size="72" color="#FFFFFF" /><LIcon v-else-if="data.myScore === data.oppScore" name="minus" :size="72" color="#FFFFFF" /><LIcon v-else name="x" :size="72" color="#FFFFFF" />
+      </view>
       <text class="result-title">{{ title }}</text>
 
       <view class="score-compare">
@@ -79,6 +81,7 @@ import { onLoad } from '@dcloudio/uni-app'
 import { getRankFromWins } from '@/utils/helpers'
 import { getPlayerRank, loadBattleStats } from '@/utils/storage'
 import Fireworks from '@/components/Fireworks.vue'
+import LIcon from '@/components/LIcon.vue'
 
 const data = ref({ myScore: 0, oppScore: 0, oppName: '', won: false, questions: [], combo: 0 })
 const rank = ref(getPlayerRank())
@@ -100,7 +103,6 @@ onLoad((query) => {
 })
 
 const rankUp = computed(() => prevRank.value && prevRank.value.id !== rank.value.id)
-const icon = computed(() => data.value.won ? '🏆' : data.value.myScore === data.value.oppScore ? '🤝' : '😢')
 const title = computed(() => data.value.won ? '胜利！' : data.value.myScore === data.value.oppScore ? '平局！' : '惜败！')
 const msg = computed(() => data.value.won ? '你击败了对手，太厉害了！' : data.value.myScore === data.value.oppScore ? '势均力敌，再比一次！' : '别灰心，下次一定能赢！')
 const myAcc = computed(() => Math.round(data.value.myScore / 10 * 100))
@@ -112,84 +114,89 @@ function goBattle() { uni.redirectTo({ url: '/pages/battle-match/battle-match' }
 </script>
 
 <style scoped>
-.page { min-height: 100vh; background: #FFF8E1; position: relative; }
+.page { min-height: 100vh; background: #F7F5F0; position: relative; }
 .result-content {
   display: flex; flex-direction: column; align-items: center;
   padding: 60rpx 48rpx 120rpx; gap: 20rpx;
 }
 .rank-badge {
   display: flex; align-items: center; gap: 8rpx;
-  padding: 8rpx 32rpx; border-radius: 40rpx;
+  padding: 8rpx 32rpx; border-radius: 999rpx;
 }
 .rank-icon { font-size: 32rpx; }
-.rank-name { font-size: 28rpx; font-weight: 700; color: #fff; }
+.rank-name { font-size: 28rpx; font-weight: 700; color: #FFFFFF; }
 .rank-up-banner {
-  background: linear-gradient(to right, #FFD54F, #FF8A65);
-  padding: 8rpx 40rpx; border-radius: 40rpx;
-  animation: rankUpGlow 1s ease-in-out infinite alternate;
+  background: #F5A623;
+  padding: 8rpx 40rpx; border-radius: 999rpx;
 }
-.rank-up-text { font-size: 28rpx; font-weight: 800; color: #fff; }
-.result-icon { font-size: 128rpx; animation: float 2s ease-in-out infinite; }
-.result-title { font-size: 52rpx; font-weight: 800; color: #37474F; }
+.rank-up-text { font-size: 28rpx; font-weight: 800; color: #FFFFFF; }
+
+.result-circle {
+  width: 128rpx; height: 128rpx; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  animation: float 2s ease-in-out infinite;
+}
+.circle-win { background: #2B9E8F; }
+.circle-draw { background: #F5A623; }
+.circle-lose { background: #D94848; }
+.result-symbol { font-size: 72rpx; font-weight: 900; color: #FFFFFF; display: flex; align-items: center; justify-content: center; }
+
+.result-title { font-size: 52rpx; font-weight: 800; color: #1A1A2E; }
 .score-compare { display: flex; align-items: center; gap: 32rpx; margin: 16rpx 0; }
 .score-player { display: flex; flex-direction: column; align-items: center; gap: 8rpx; }
-.score-name { font-size: 28rpx; color: #78909C; }
-.score-num { font-size: 96rpx; font-weight: 900; color: #FF7043; }
-.opp-color { color: #EF5350; }
-.score-vs { font-size: 56rpx; color: #78909C; font-weight: 300; }
-.result-message { font-size: 32rpx; color: #78909C; text-align: center; }
+.score-name { font-size: 28rpx; color: #6B7280; }
+.score-num { font-size: 96rpx; font-weight: 900; color: #E8573A; }
+.opp-color { color: #D94848; }
+.score-vs { font-size: 56rpx; color: #9CA3AF; font-weight: 300; }
+.result-message { font-size: 32rpx; color: #6B7280; text-align: center; }
 .combo-badge {
-  background: linear-gradient(135deg, rgba(255,213,79,0.15), rgba(255,138,101,0.1));
-  padding: 8rpx 32rpx; border-radius: 40rpx;
+  background: rgba(245,166,35,0.08);
+  padding: 8rpx 32rpx; border-radius: 999rpx;
 }
-.combo-badge-text { font-size: 26rpx; font-weight: 700; color: #FF8A65; }
+.combo-badge-text { font-size: 26rpx; font-weight: 700; color: #F5A623; }
 .result-details {
-  width: 100%; max-width: 600rpx; background: #fff; border-radius: 40rpx;
-  padding: 32rpx; box-shadow: 0 8rpx 40rpx rgba(255,138,101,0.1); margin: 8rpx 0;
+  width: 100%; max-width: 600rpx; background: #FFFFFF; border-radius: 28rpx;
+  padding: 32rpx; box-shadow: 0 8rpx 32rpx rgba(26,26,46,0.08); margin: 8rpx 0;
 }
 .detail-row {
   display: flex; justify-content: space-between; padding: 16rpx 0;
-  font-size: 30rpx; border-bottom: 2rpx solid #FFF8E1;
+  font-size: 30rpx; border-bottom: 2rpx solid #F0EDE8;
 }
 .detail-row:last-child { border-bottom: none; }
-.detail-label { color: #78909C; }
-.detail-value { font-weight: 700; color: #37474F; }
+.detail-label { color: #6B7280; }
+.detail-value { font-weight: 700; color: #1A1A2E; }
 
 .replay-box {
-  width: 100%; max-width: 600rpx; background: #fff; border-radius: 40rpx;
-  padding: 32rpx; box-shadow: 0 8rpx 40rpx rgba(255,138,101,0.1);
+  width: 100%; max-width: 600rpx; background: #FFFFFF; border-radius: 28rpx;
+  padding: 32rpx; box-shadow: 0 8rpx 32rpx rgba(26,26,46,0.08);
 }
-.replay-title { font-size: 30rpx; font-weight: 700; color: #37474F; margin-bottom: 20rpx; display: block; }
+.replay-title { font-size: 30rpx; font-weight: 700; color: #1A1A2E; margin-bottom: 20rpx; display: block; }
 .replay-item {
   display: flex; align-items: center; gap: 16rpx;
-  padding: 14rpx 0; border-bottom: 2rpx solid #FFF8E1;
+  padding: 14rpx 0; border-bottom: 2rpx solid #F0EDE8;
 }
 .replay-item:last-child { border-bottom: none; }
-.replay-num { font-size: 26rpx; color: #78909C; font-weight: 600; min-width: 40rpx; }
-.replay-word { font-size: 30rpx; font-weight: 600; color: #37474F; flex: 1; }
+.replay-num { font-size: 26rpx; color: #6B7280; font-weight: 600; min-width: 40rpx; }
+.replay-word { font-size: 30rpx; font-weight: 600; color: #1A1A2E; flex: 1; }
 .replay-scores { display: flex; gap: 16rpx; }
 .replay-result { font-size: 26rpx; font-weight: 600; min-width: 100rpx; }
-.replay-correct { color: #66BB6A; }
-.replay-wrong { color: #EF5350; }
+.replay-correct { color: #2B9E8F; }
+.replay-wrong { color: #D94848; }
 .replay-legend { margin-top: 16rpx; text-align: center; }
-.legend-text { font-size: 26rpx; color: #78909C; }
+.legend-text { font-size: 26rpx; color: #9CA3AF; }
 
 .result-actions { display: flex; gap: 24rpx; margin-top: 24rpx; width: 100%; max-width: 600rpx; }
 .btn-secondary {
-  flex: 1; background: #fff; color: #FF7043; border: 4rpx solid #FFB74D;
-  padding: 32rpx; border-radius: 100rpx; font-size: 34rpx; font-weight: 600;
+  flex: 1; background: #FFFFFF; color: #E8573A; border: 3rpx solid #E8E5DF;
+  padding: 32rpx; border-radius: 999rpx; font-size: 34rpx; font-weight: 600;
 }
 .btn-primary {
-  flex: 1; background: linear-gradient(to right, #FF7043, #FF8A65); color: #fff;
-  border: none; padding: 32rpx; border-radius: 100rpx; font-size: 34rpx; font-weight: 700;
-  box-shadow: 0 8rpx 30rpx rgba(255,112,67,0.35);
+  flex: 1; background: #E8573A; color: #FFFFFF;
+  border: none; padding: 32rpx; border-radius: 999rpx; font-size: 34rpx; font-weight: 700;
+  box-shadow: 0 8rpx 32rpx rgba(26,26,46,0.08);
 }
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20rpx); }
-}
-@keyframes rankUpGlow {
-  from { box-shadow: 0 8rpx 24rpx rgba(255,213,79,0.4); }
-  to   { box-shadow: 0 12rpx 48rpx rgba(255,213,79,0.7); }
+  50% { transform: translateY(-12rpx); }
 }
 </style>

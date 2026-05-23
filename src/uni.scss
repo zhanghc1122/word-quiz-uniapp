@@ -1,16 +1,57 @@
-$primary: #FF8A65;
-$primary-light: #FFB74D;
-$secondary: #66BB6A;
-$accent: #FFD54F;
-$danger: #EF5350;
-$bg: #FFF8E1;
+// Colors
+$primary: #E8573A;
+$primary-hover: #D44A2E;
+$primary-bg: rgba(232, 87, 58, 0.08);
+$secondary: #2B9E8F;
+$secondary-bg: rgba(43, 158, 143, 0.08);
+$accent: #F5A623;
+$accent-bg: rgba(245, 166, 35, 0.08);
+$danger: #D94848;
+$danger-bg: rgba(217, 72, 72, 0.08);
+$purple: #7C5CBF;
+$purple-bg: rgba(124, 92, 191, 0.08);
+$bg: #F7F5F0;
 $card: #FFFFFF;
-$text: #37474F;
-$text-light: #78909C;
-$radius: 40rpx;
-$radius-sm: 24rpx;
-$shadow: 0 8rpx 40rpx rgba(255,138,101,0.12);
-$blue: #42A5F5;
-$purple: #AB47BC;
-$orange-deep: #FF7043;
-$teal: #26A69A;
+$surface: #FFFFFF;
+$text: #1A1A2E;
+$text-secondary: #6B7280;
+$text-tertiary: #9CA3AF;
+$border: #E8E5DF;
+$divider: #F0EDE8;
+
+// Avatar palette
+$avatar-1: #E8573A;
+$avatar-2: #2B9E8F;
+$avatar-3: #F5A623;
+$avatar-4: #7C5CBF;
+$avatar-5: #3B82C4;
+
+// Typography
+$font-base: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
+$text-hero: 80rpx;
+$text-display: 64rpx;
+$text-heading: 48rpx;
+$text-title: 36rpx;
+$text-body: 30rpx;
+$text-caption: 26rpx;
+$text-micro: 22rpx;
+
+// Spacing
+$space-xs: 8rpx;
+$space-sm: 16rpx;
+$space-md: 24rpx;
+$space-lg: 32rpx;
+$space-xl: 48rpx;
+$space-2xl: 64rpx;
+
+// Border radius
+$radius-sm: 12rpx;
+$radius-md: 20rpx;
+$radius-lg: 28rpx;
+$radius-xl: 36rpx;
+$radius-full: 999rpx;
+
+// Shadows
+$shadow-sm: 0 2rpx 8rpx rgba(26, 26, 46, 0.04);
+$shadow-md: 0 4rpx 16rpx rgba(26, 26, 46, 0.06);
+$shadow-lg: 0 8rpx 32rpx rgba(26, 26, 46, 0.08);

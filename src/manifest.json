@@ -1,25 +1,30 @@
 {
-  "name": "单词大闯关",
-  "appid": "__UNI__WORDQUIZ",
-  "description": "小学英语单词学习APP，每天10个词，轻松学英语",
-  "versionName": "1.0.0",
-  "versionCode": "100",
-  "transformPx": false,
-  "h5": {
-    "title": "单词大闯关",
-    "router": { "mode": "hash" }
-  },
-  "app-plus": {
-    "distribute": {
-      "android": {
-        "permissions": [
-          "<uses-permission android:name=\"android.permission.INTERNET\"/>"
-        ]
-      }
+    "name" : "单词大闯关",
+    "appid" : "__UNI__1E0565C",
+    "description" : "小学英语单词学习APP，每天10个词，轻松学英语",
+    "versionName" : "1.0.0",
+    "versionCode" : "100",
+    "transformPx" : false,
+    "h5" : {
+        "title" : "单词大闯关",
+        "router" : {
+            "mode" : "hash"
+        }
+    },
+    "app-plus" : {
+        "distribute" : {
+            "android" : {
+                "permissions" : [ "<uses-permission android:name=\"android.permission.INTERNET\"/>" ]
+            },
+            "ios" : {
+                "dSYMs" : false
+            }
+        }
+    },
+    "mp-weixin" : {
+        "appid" : "",
+        "setting" : {
+            "urlCheck" : false
+        }
     }
-  },
-  "mp-weixin": {
-    "appid": "",
-    "setting": { "urlCheck": false }
-  }
 }
