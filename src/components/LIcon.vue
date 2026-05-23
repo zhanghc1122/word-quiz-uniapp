@@ -7,8 +7,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch, onMounted } from 'vue'
-import { iconCache, fetchIconFromMCP } from '@/utils/iconLoader'
+import { computed } from 'vue'
 
 const props = defineProps({
   name: { type: String, required: true },

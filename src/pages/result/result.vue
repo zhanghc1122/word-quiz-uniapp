@@ -2,7 +2,7 @@
   <view class="page">
     <view class="result-content">
       <view :class="['result-circle', data.correct >= 7 ? 'circle-success' : data.correct >= 5 ? 'circle-ok' : 'circle-fail']">
-        <text class="result-symbol"><LIcon v-if="data.correct >= 7" name="check" :size="72" color="#FFFFFF" /><text v-else>!</text>
+        <text class="result-symbol"><LIcon v-if="data.correct >= 7" name="check" size="72rpx" color="#FFFFFF" /><text v-else>!</text></text>
       </view>
       <text class="result-title">测验完成！</text>
       <view class="result-score">
