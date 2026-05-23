@@ -1,4 +1,4 @@
-// Sound utility using Web Audio API - generates tones without external files
+// Sound utility using Web Audio API + pre-recorded encouragement audio
 
 let audioContext = null
 
@@ -83,7 +83,7 @@ export function playClick() {
 export function playTimeout() {
   // Gentle warning
   playTone(300, 0.2, 'square', 0.15)
-  setTimeout(() => playTone(250, 0.15, 'square', 0.1), 150)
+  setTimeout(() => playTone(NOTE.D4, 0.15, 'square', 0.1), 150)
 }
 
 export function playBattleWin() {
@@ -98,4 +98,89 @@ export function playBattleLose() {
   // Sympathetic
   playTone(NOTE.E4, 0.15, 'sine', 0.2)
   setTimeout(() => playTone(NOTE.C4, 0.2, 'sine', 0.2), 120)
+}
+
+// Pre-recorded encouragement audio
+import good from '@/assets/audio/encouragements/good.mp3'
+import nice from '@/assets/audio/encouragements/nice.mp3'
+import got_it from '@/assets/audio/encouragements/got_it.mp3'
+import great from '@/assets/audio/encouragements/great.mp3'
+import awesome from '@/assets/audio/encouragements/awesome.mp3'
+import amazing from '@/assets/audio/encouragements/amazing.mp3'
+import fantastic from '@/assets/audio/encouragements/fantastic.mp3'
+import super_audio from '@/assets/audio/encouragements/super.mp3'
+import incredible from '@/assets/audio/encouragements/incredible.mp3'
+import perfect from '@/assets/audio/encouragements/perfect.mp3'
+import you_rock from '@/assets/audio/encouragements/you_rock.mp3'
+import brilliant from '@/assets/audio/encouragements/brilliant.mp3'
+import victory from '@/assets/audio/encouragements/victory.mp3'
+import you_won from '@/assets/audio/encouragements/you_won.mp3'
+import champion from '@/assets/audio/encouragements/champion.mp3'
+import try_again from '@/assets/audio/encouragements/try_again.mp3'
+import keep_going from '@/assets/audio/encouragements/keep_going.mp3'
+import dont_give_up from '@/assets/audio/encouragements/dont_give_up.mp3'
+import almost from '@/assets/audio/encouragements/almost.mp3'
+import nice_try from '@/assets/audio/encouragements/nice_try.mp3'
+import keep_it_up from '@/assets/audio/encouragements/keep_it_up.mp3'
+
+const audioMap = {
+  good, nice, got_it, great, awesome, amazing, fantastic,
+  super: super_audio, incredible, perfect, you_rock, brilliant,
+  victory, you_won, champion, try_again, keep_going, dont_give_up,
+  almost, nice_try, keep_it_up,
+}
+
+function playAudio(src) {
+  if (isMuted()) return
+  try {
+    const audio = new Audio(src)
+    audio.play()
+  } catch (e) {
+    // Silently fail if audio not supported
+  }
+}
+
+export function isMuted() {
+  return uni.getStorageSync('soundMuted') === true
+}
+
+export function setMuted(muted) {
+  uni.setStorageSync('soundMuted', muted)
+}
+
+const ENCOURAGEMENTS = {
+  correct: ['good', 'nice', 'got_it'],
+  great: ['great', 'awesome', 'amazing'],
+  fantastic: ['fantastic', 'super', 'incredible'],
+  perfect: ['perfect', 'you_rock', 'brilliant'],
+  battleWin: ['victory', 'you_won', 'champion'],
+  wrong: ['try_again', 'keep_going', 'dont_give_up'],
+  almost: ['almost', 'nice_try', 'keep_it_up'],
+}
+
+function randomPick(arr) {
+  return arr[Math.floor(Math.random() * arr.length)]
+}
+
+export function speakCorrect(combo = 1) {
+  const key = combo >= 5 ? randomPick(ENCOURAGEMENTS.fantastic)
+    : combo >= 2 ? randomPick(ENCOURAGEMENTS.great)
+    : randomPick(ENCOURAGEMENTS.correct)
+  playAudio(audioMap[key])
+}
+
+export function speakWrong() {
+  playAudio(audioMap[randomPick(ENCOURAGEMENTS.wrong)])
+}
+
+export function speakPerfect() {
+  playAudio(audioMap[randomPick(ENCOURAGEMENTS.perfect)])
+}
+
+export function speakBattleWin() {
+  playAudio(audioMap[randomPick(ENCOURAGEMENTS.battleWin)])
+}
+
+export function speakAlmost() {
+  playAudio(audioMap[randomPick(ENCOURAGEMENTS.almost)])
 }

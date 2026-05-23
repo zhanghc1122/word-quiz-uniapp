@@ -4,8 +4,8 @@
       <view class="battle-player">
         <view class="battle-avatar me-avatar"><text class="avatar-letter">学</text></view>
         <text class="battle-name white">我</text>
-        <view class="hp-bar"><view class="hp-fill me-fill" :style="{ width: (100 - oppScore * 10) + '%' }"></view></view>
-        <text class="battle-score">{{ myScore }}</text>
+        <view class="hp-bar"><view class="hp-fill me-fill" :style="{ width: (myHP / 10 * 100) + '%' }"></view></view>
+        <text class="battle-score">{{ myHP }}</text>
       </view>
       <text class="battle-vs">VS</text>
       <view class="battle-player">
@@ -13,8 +13,8 @@
           <text class="avatar-letter">{{ opponent.avatar.initial }}</text>
         </view>
         <text class="battle-name white">{{ opponent.name }}</text>
-        <view class="hp-bar"><view class="hp-fill opp-fill" :style="{ width: (100 - myScore * 10) + '%' }"></view></view>
-        <text class="battle-score">{{ oppScore }}</text>
+        <view class="hp-bar"><view class="hp-fill opp-fill" :style="{ width: (oppHP / 10 * 100) + '%' }"></view></view>
+        <text class="battle-score">{{ oppHP }}</text>
       </view>
       <view class="btn-back-battle" @tap="confirmQuit"><LIcon name="x" size="40rpx" color="#FFFFFF" /></view>
     </view>
@@ -41,7 +41,7 @@
       <AiThinking :visible="showAiThinking" :opponentAvatar="opponent.avatar" :resolved="aiResolved" :correct="lastAiCorrect" />
     </view>
 
-    <scroll-view scroll-y class="battle-log">
+    <scroll-view scroll-y :class="['battle-log', logs.length > 0 ? 'visible' : '']">
       <view v-for="(log, i) in logs.slice(-2)" :key="i">
         <text :class="log.cls">{{ log.text }}</text>
       </view>
@@ -56,9 +56,10 @@
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { wordsDB } from '@/utils/words'
-import { AI_OPPONENTS, simulateAiAnswer } from '@/utils/helpers'
+import { AI_OPPONENTS, simulateAiAnswer, seededShuffle } from '@/utils/helpers'
 import { saveBattleResult } from '@/utils/storage'
-import { playCorrect, playWrong, playCombo, playTimeout, playClick } from '@/utils/sound'
+import { getEdition } from '@/utils/edition'
+import { playCorrect, playWrong, playCombo, playTimeout, playClick, speakCorrect, speakWrong } from '@/utils/sound'
 import WordToast from '@/components/WordToast.vue'
 import ComboIndicator from '@/components/ComboIndicator.vue'
 import AiThinking from '@/components/AiThinking.vue'
@@ -66,22 +67,26 @@ import BattleTimer from '@/components/BattleTimer.vue'
 import LIcon from '@/components/LIcon.vue'
 
 const grade = ref(uni.getStorageSync('currentGrade') || 3)
-const allWords = wordsDB[grade.value] || []
+const edition = ref(getEdition())
+const allWords = computed(() => wordsDB[edition.value]?.[grade.value] || [])
 const seed = Date.now()
 
 const opponentId = ref('')
 const difficulty = ref('medium')
-const opponent = ref({ id: 'zhi', name: '小智同学', avatar: { initial: '智', color: '#7C5CBF' }, personality: 'steady' })
+const opponent = ref({ id: 'zhi', name: '小智同学', avatar: { initial: '智', color: '#A855C7' }, personality: 'steady' })
 
 const questions = ref([])
 const battleIndex = ref(0)
 const myScore = ref(0)
 const oppScore = ref(0)
+const myHP = ref(10)
+const oppHP = ref(10)
 const answered = ref(false)
 const selectedIdx = ref(-1)
 const logs = ref([])
 const combo = ref(0)
 const maxCombo = ref(0)
+const aiCombo = ref(0)
 const questionReplay = ref([])
 
 const timerActive = ref(false)
@@ -98,6 +103,7 @@ const currentQ = computed(() => questions.value[battleIndex.value] || { word: { 
 onLoad((query) => {
   opponentId.value = query.opponentId || 'zhi'
   difficulty.value = query.difficulty || 'medium'
+  if (query.edition) edition.value = query.edition
   const found = AI_OPPONENTS.find(o => o.id === opponentId.value)
   if (found) opponent.value = found
   generateQuestions()
@@ -105,23 +111,14 @@ onLoad((query) => {
 })
 
 function generateQuestions() {
-  const shuffled = seededShuffleArr([...allWords], seed)
+  const words = allWords.value
+  const shuffled = seededShuffle([...words], seed)
   questions.value = shuffled.slice(0, 10).map((w, i) => {
-    const others = allWords.filter(x => x.word !== w.word)
-    const distractors = seededShuffleArr([...others], seed + i + 500).slice(0, 3)
-    const options = seededShuffleArr([w, ...distractors], seed + i + 600)
+    const others = words.filter(x => x.word !== w.word)
+    const distractors = seededShuffle([...others], seed + i + 500).slice(0, 3)
+    const options = seededShuffle([w, ...distractors], seed + i + 600)
     return { word: w, correctIndex: options.indexOf(w), options: options.map(o => o.meaning) }
   })
-}
-
-function seededShuffleArr(arr, s) {
-  const result = [...arr]
-  for (let i = result.length - 1; i > 0; i--) {
-    const x = Math.sin(s + i) * 10000
-    const j = Math.floor((x - Math.floor(x)) * (i + 1))
-    ;[result[i], result[j]] = [result[j], result[i]]
-  }
-  return result
 }
 
 function flashToast(correct, text) {
@@ -161,25 +158,60 @@ function answer(index) {
   answered.value = true; selectedIdx.value = index; timerActive.value = false
   const q = questions.value[battleIndex.value]; const startTime = Date.now()
   const iCorrect = index === q.correctIndex
+
+  // Player answer processing with HP mechanics
   if (iCorrect) {
+    oppHP.value--
     myScore.value++; combo.value++
     if (combo.value > maxCombo.value) maxCombo.value = combo.value
     playCorrect()
+    speakCorrect(combo.value)
     if (combo.value >= 2) playCombo()
     flashToast(true, ''); flashCombo()
   } else {
+    myHP.value--
     combo.value = 0; playWrong()
+    speakWrong()
     flashToast(false, '没关系，再接再厉！')
   }
 
-  const aiResult = simulateAiAnswer(battleIndex.value, 10, combo.value, opponentId.value, difficulty.value)
+  // Check if battle ends by HP depletion
+  if (myHP.value <= 0) {
+    finishBattle()
+    return
+  }
+  if (oppHP.value <= 0) {
+    finishBattle()
+    return
+  }
+
+  const aiResult = simulateAiAnswer(battleIndex.value, 10, aiCombo.value, opponentId.value, difficulty.value)
   showAiThinking.value = true; aiResolved.value = false
 
   setTimeout(() => {
     aiResolved.value = true; lastAiCorrect.value = aiResult.correct
-    if (aiResult.correct) oppScore.value++
-    const myMsg = iCorrect ? '✔ 你答对了！' : '✘ 你答错了'
-    const oppMsg = aiResult.correct ? `✔ ${opponent.value.name}答对了` : `✘ ${opponent.value.name}答错了`
+    if (aiResult.correct) {
+      myHP.value--
+      aiCombo.value++
+    } else {
+      oppHP.value--
+      aiCombo.value = 0
+    }
+
+    // Check HP after AI answer
+    if (myHP.value <= 0) {
+      showAiThinking.value = false
+      finishBattle()
+      return
+    }
+    if (oppHP.value <= 0) {
+      showAiThinking.value = false
+      finishBattle()
+      return
+    }
+
+    const myMsg = iCorrect ? '答对了！' : '答错了'
+    const oppMsg = aiResult.correct ? `${opponent.value.name}答对` : `${opponent.value.name}答错`
     logs.value.push({ text: `${myMsg} | ${oppMsg}`, cls: iCorrect ? 'log-correct' : 'log-wrong' })
     questionReplay.value.push({
       word: q.word.word, myAnswer: index >= 0 ? q.options[index] : '超时',
@@ -195,14 +227,15 @@ function answer(index) {
 }
 
 function finishBattle() {
-  const won = myScore.value > oppScore.value
+  // Winner determined by HP, not score
+  const won = myHP.value > oppHP.value
   saveBattleResult({
     timestamp: Date.now(), opponentId: opponentId.value, difficulty: difficulty.value,
-    grade: grade.value, myScore: myScore.value, oppScore: oppScore.value,
+    grade: grade.value, edition: edition.value, myScore: 10 - oppHP.value, oppScore: 10 - myHP.value,
     won, combo: maxCombo.value, questions: questionReplay.value,
   })
   const params = encodeURIComponent(JSON.stringify({
-    myScore: myScore.value, oppScore: oppScore.value,
+    myScore: 10 - oppHP.value, oppScore: 10 - myHP.value,
     oppName: opponent.value.name, oppAvatar: opponent.value.avatar,
     opponentId: opponentId.value, difficulty: difficulty.value,
     won, combo: maxCombo.value, questions: questionReplay.value,
@@ -254,11 +287,11 @@ function finishBattle() {
 
 .battle-options { display: flex; flex-direction: column; gap: 20rpx; padding: 0 40rpx; }
 .battle-opt {
-  padding: 32rpx 36rpx; background: #FFFFFF; border: 3rpx solid #E8E5DF;
+  padding: 32rpx 36rpx; background: #FFFFFF; border: 3rpx solid #EAEAEA;
   border-radius: 20rpx; font-size: 34rpx; font-weight: 500; color: #1A1A2E;
   text-align: left; transition: all 0.25s;
 }
-.battle-opt:active { background: rgba(124,92,191,0.08); transform: scale(0.98); }
+.battle-opt:active { background: rgba(168,85,199,0.08); transform: scale(0.97); box-shadow: 0 4rpx 16rpx rgba(26,26,46,0.06); }
 .battle-opt.correct { border-color: #2B9E8F; background: rgba(43,158,143,0.08); }
 .battle-opt.wrong { border-color: #D94848; background: rgba(217,72,72,0.08); }
 .battle-opt.disabled { opacity: 0.5; }
@@ -266,10 +299,11 @@ function finishBattle() {
 .ai-thinking-area { display: flex; justify-content: flex-end; padding: 16rpx 40rpx 0; }
 
 .battle-log {
-  margin: 24rpx 40rpx; padding: 20rpx 28rpx; background: #FFFFFF;
-  border-radius: 20rpx; max-height: 120rpx; font-size: 26rpx;
-  box-shadow: 0 2rpx 8rpx rgba(26,26,46,0.04);
+  margin: 24rpx 40rpx; padding: 20rpx 28rpx; background: rgba(26,26,46,0.02);
+  border-radius: 20rpx; max-height: 0; overflow: hidden; font-size: 26rpx;
+  transition: max-height 0.3s ease;
 }
+.battle-log.visible { max-height: 120rpx; }
 .log-correct { color: #2B9E8F; }
 .log-wrong { color: #D94848; }
 </style>

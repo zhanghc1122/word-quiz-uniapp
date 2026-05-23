@@ -15,7 +15,7 @@
       <text class="word-display">{{ currentWord.word }}</text>
       <text class="word-phonetic">{{ currentWord.phonetic }}</text>
       <button class="btn-sound" @tap="speakWord">
-        <LIcon name="volume-2" color="#7C5CBF" size="48rpx" />
+        <LIcon name="volume-2" color="#A855C7" size="48rpx" />
         <text class="sound-label">听发音</text>
       </button>
       <view class="meaning-box">
@@ -33,7 +33,7 @@
         :class="{ 'btn-disabled': currentIndex === 0 }"
         @tap="prev"
       >
-        <LIcon name="chevron-left" :size="32" color="#7C5CBF" />
+        <LIcon name="chevron-left" :size="32" color="#A855C7" />
         上一个
       </button>
       <button
@@ -53,23 +53,35 @@
 import { ref, computed } from 'vue'
 import { wordsDB } from '@/utils/words'
 import { getDaySeed, seededShuffle, getTodayKey } from '@/utils/helpers'
-import { loadStats, saveLearnProgress } from '@/utils/storage'
+import { loadStats, saveStats, saveLearnProgress } from '@/utils/storage'
+import { getEdition } from '@/utils/edition'
 import { playClick } from '@/utils/sound'
 import LIcon from '@/components/LIcon.vue'
 
 const grade = ref(uni.getStorageSync('currentGrade') || 3)
-const allWords = wordsDB[grade.value] || []
+const edition = getEdition()
+const allWords = wordsDB[edition][grade.value] || []
 const todaySeed = getDaySeed()
-const todayWords = seededShuffle([...allWords], todaySeed).slice(0, 10)
+const todayKey = getTodayKey(grade.value, edition)
 
 const stats = loadStats()
-const todayKey = getTodayKey(grade.value)
+
+// Restore daily word pool from storage so word order is stable across resumes
+let dailyWordPool = stats[todayKey + '_pool']
+if (!dailyWordPool) {
+  dailyWordPool = seededShuffle([...allWords], todaySeed).slice(0, 10)
+  stats[todayKey + '_pool'] = dailyWordPool
+  saveStats(stats)
+}
+
+// Already learned words (by word string)
 const learned = stats[todayKey] || []
 
 const currentIndex = ref(learned.length)
-const animating = ref(false)
 
-const currentWord = computed(() => todayWords[currentIndex.value] || { word: '', phonetic: '', meaning: '', sentence: '' })
+const currentWord = computed(() => dailyWordPool[currentIndex.value] || { word: '', phonetic: '', meaning: '', sentence: '' })
+
+const animating = ref(false)
 
 function triggerAnim() {
   animating.value = false
@@ -96,11 +108,15 @@ function prev() {
 
 function next() {
   playClick()
-  saveLearnProgress(grade.value, todayWords[currentIndex.value].word)
+  saveLearnProgress(grade.value, dailyWordPool[currentIndex.value].word, edition)
   if (currentIndex.value < 9) {
     currentIndex.value++
     triggerAnim()
   } else {
+    // Save learned words to storage and pass to quiz so word order is consistent
+    const learnedWords = dailyWordPool.map(w => w.word)
+    uni.setStorageSync('todayLearnedWords_' + todayKey, learnedWords)
+    uni.setStorageSync('fromLearn', true)
     uni.redirectTo({ url: '/pages/quiz/quiz' })
   }
 }
@@ -130,13 +146,13 @@ triggerAnim()
 }
 .word-counter {
   text-align: center; padding: 40rpx 40rpx 8rpx; font-size: 36rpx;
-  color: #7C5CBF; font-weight: 700;
+  color: #A855C7; font-weight: 700;
 }
 .progress-bar {
-  height: 16rpx; background: #E8E5DF; margin: 0 40rpx; border-radius: 8rpx; overflow: hidden;
+  height: 16rpx; background: #EAEAEA; margin: 0 40rpx; border-radius: 8rpx; overflow: hidden;
 }
 .progress-fill {
-  height: 100%; background: linear-gradient(90deg, #7C5CBF, #9B7BD8);
+  height: 100%; background: linear-gradient(90deg, #E8573A, #F08060);
   border-radius: 8rpx; transition: width 0.4s ease-out;
 }
 
@@ -146,7 +162,7 @@ triggerAnim()
 }
 .progress-big-text {
   font-size: 32rpx; color: #6B7280; font-weight: 600;
-  background: rgba(124,92,191,0.08);
+  background: rgba(168,85,199,0.08);
   padding: 12rpx 32rpx; border-radius: 999rpx;
 }
 
@@ -161,74 +177,84 @@ triggerAnim()
 }
 .learn-card.animate-pop { animation: pop 0.4s ease-out; }
 .learn-card:active {
-  border-color: #7C5CBF;
-  box-shadow: 0 12rpx 40rpx rgba(124,92,191,0.2);
+  border-color: #A855C7;
+  box-shadow: 0 12rpx 40rpx rgba(168,85,199,0.2);
 }
-.word-display { font-size: 96rpx; font-weight: 900; color: #7C5CBF; letter-spacing: 4rpx; }
+.word-display { font-size: 64rpx; font-weight: 900; color: #1A1A2E; letter-spacing: 2rpx; }
 .word-phonetic { font-size: 38rpx; color: #6B7280; font-style: italic; }
 
 /* 发音按钮 */
 .btn-sound {
   display: flex; flex-direction: column; align-items: center; gap: 4rpx;
   width: 100rpx; height: 100rpx; border-radius: 50%;
-  background: rgba(124,92,191,0.1);
+  background: rgba(168,85,199,0.1);
   border: none;
   justify-content: center;
   transition: all 0.2s;
 }
 .btn-sound:active {
-  background: rgba(124,92,191,0.2);
+  background: rgba(168,85,199,0.2);
   transform: scale(0.95);
 }
-.sound-label { font-size: 22rpx; color: #7C5CBF; font-weight: 600; }
+.sound-label { font-size: 22rpx; color: #A855C7; font-weight: 600; }
 
-/* 词义盒子 */
+/* 词义盒子 - 统一用紫色语义 */
 .meaning-box {
   margin-top: 16rpx; padding: 24rpx 64rpx;
-  background: linear-gradient(135deg, rgba(43,158,143,0.08), rgba(43,158,143,0.04));
+  background: rgba(168,85,199,0.08);
   border-radius: 999rpx;
-  border: 3rpx solid rgba(43,158,143,0.15);
+  border: 3rpx solid rgba(168,85,199,0.15);
 }
-.word-meaning { font-size: 60rpx; font-weight: 700; color: #2B9E8F; }
+.word-meaning { font-size: 48rpx; font-weight: 700; color: #A855C7; }
 
 /* 例句 */
 .sentence-box { display: flex; flex-direction: column; align-items: center; gap: 8rpx; margin-top: 12rpx; }
-.sentence-label { font-size: 28rpx; color: #FFFFFF; background: #7C5CBF; padding: 6rpx 24rpx; border-radius: 999rpx; font-weight: 600; }
+.sentence-label { font-size: 28rpx; color: #FFFFFF; background: #A855C7; padding: 6rpx 24rpx; border-radius: 999rpx; font-weight: 600; }
 .word-sentence { font-size: 34rpx; color: #1A1A2E; font-style: italic; line-height: 1.6; text-align: center; padding: 0 20rpx; }
 
 /* 操作按钮 */
 .learn-actions { display: flex; gap: 24rpx; padding: 0 40rpx; margin-top: auto; padding-bottom: 40rpx; }
 .btn-secondary {
-  flex: 1; background: #FFFFFF; color: #7C5CBF; border: 4rpx solid #E8E5DF;
+  flex: 1; background: #FFFFFF; color: #A855C7; border: 4rpx solid #EAEAEA;
   padding: 32rpx 24rpx; border-radius: 999rpx; font-size: 34rpx; font-weight: 700;
   display: flex; align-items: center; justify-content: center; gap: 8rpx;
-  transition: all 0.2s;
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.12s;
+  box-shadow: 0 4rpx 16rpx rgba(26,26,46,0.06);
 }
 .btn-secondary:active {
-  background: #7C5CBF; color: #FFFFFF;
-  transform: scale(0.96);
+  background: #A855C7; color: #FFFFFF;
+  transform: scale(0.92);
+  box-shadow: 0 2rpx 8rpx rgba(168,85,199,0.3);
 }
-.btn-secondary.btn-disabled { opacity: 0.5; }
-.btn-secondary.btn-disabled:active { transform: none; background: #FFFFFF; }
+.btn-secondary.btn-disabled {
+  opacity: 0.5;
+  background: #F0EDE8;
+  color: #C0BDB8;
+}
+.btn-secondary.btn-disabled:active {
+  transform: none;
+  background: #F0EDE8;
+  box-shadow: 0 4rpx 16rpx rgba(26,26,46,0.06);
+}
 
 .btn-primary {
-  flex: 1.2; background: #7C5CBF; color: #FFFFFF;
+  flex: 1.2; background: #A855C7; color: #FFFFFF;
   border: none; padding: 32rpx 24rpx; border-radius: 999rpx; font-size: 36rpx; font-weight: 800;
   display: flex; align-items: center; justify-content: center; gap: 12rpx;
-  box-shadow: 0 8rpx 32rpx rgba(124,92,191,0.3);
-  transition: all 0.2s;
+  box-shadow: 0 8rpx 32rpx rgba(168,85,199,0.3);
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.12s, background 0.12s;
 }
 .btn-primary:active {
-  background: #6B4FA0;
-  transform: scale(0.96);
-  box-shadow: 0 4rpx 16rpx rgba(124,92,191,0.3);
+  background: #8B3DA0;
+  transform: scale(0.92);
+  box-shadow: 0 4rpx 16rpx rgba(168,85,199,0.5);
 }
 .btn-primary.btn-primary-active {
-  background: linear-gradient(135deg, #E8573A, #F07050);
+  background: linear-gradient(135deg, #E8573A, #F08060);
   box-shadow: 0 8rpx 32rpx rgba(232,87,58,0.3);
 }
 .btn-primary.btn-primary-active:active {
-  background: linear-gradient(135deg, #D04830, #E06040);
+  background: linear-gradient(135deg, #C04020, #C84030);
 }
 
 @keyframes pop {
