@@ -1,9 +1,15 @@
 <template>
   <view
-    :style="computedStyle"
+    :style="iconStyle"
     :class="['l-icon', { 'l-icon-clickable': !!$attrs.onClick }]"
     @click="$emit('click')"
-  />
+  >
+    <image
+      :src="iconDataUri"
+      :style="{ width: '100%', height: '100%' }"
+      mode="aspectFit"
+    />
+  </view>
 </template>
 
 <script setup>
@@ -11,7 +17,7 @@ import { computed } from 'vue'
 
 const props = defineProps({
   name: { type: String, required: true },
-  size: { type: String, default: '40rpx' },
+  size: { type: [String, Number], default: '40rpx' },
   color: { type: String, default: '#1A1A2E' },
   library: { type: String, default: 'lucide' }, // lucide, material, tabler, heroicons, phosphor, etc.
 })
@@ -39,9 +45,15 @@ const BUILT_IN_ICONS = {
   'x': '<line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/>',
   'check': '<polyline points="20 6 9 17 4 12"/>',
 
+  // === 结果/反馈 ===
+  'circle-check-big': '<path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/>',
+  'octagon-x': '<path d="m15 9-6 6m-6.414 1.726A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2h6.624a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586zM9 9l6 6"/>',
+
   // === 状态 ===
   'alert-circle': '<circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>',
   'zap': '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  'circle-dot': '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="1"/>',
+  'move-horizontal': '<polyline points="18 8 22 12 18 16"/><polyline points="2 12 6 8 2 4"/><line x1="2" x2="22" y1="12" y2="12"/>',
 
   // === 其他 ===
   'star': '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
@@ -99,6 +111,7 @@ const BUILT_IN_ICONS = {
   'sun': '<circle cx="12" cy="12" r="5"/><line x1="12" x2="12" y1="1" y2="3"/><line x1="12" x2="12" y1="21" y2="23"/><line x1="4.22" x2="5.64" y1="4.22" y2="5.64"/><line x1="18.36" x2="19.78" y1="18.36" y2="19.78"/><line x1="1" x2="3" y1="12" y2="12"/><line x1="21" x2="23" y1="12" y2="12"/><line x1="4.22" x2="5.64" y1="19.78" y2="18.36"/><line x1="18.36" x2="19.78" y1="5.64" y2="4.22"/>',
   'cloud': '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>',
   'moon': '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+  'lightbulb': '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
 
   // === UI 元素 ===
   'eye': '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
@@ -155,6 +168,14 @@ const BUILT_IN_ICONS = {
   'thumbs-down': '<path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A4.5 4.5 0 0 1 22 8v7a4.5 4.5 0 0 1-4.5 4H6a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h1"/>',
   'send': '<line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>',
   'link': '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+
+  // === 等级/成就 ===
+  'sprout': '<path d="M7 20h10"/><path d="M10 20c5.5-2.5 8-8 8-14"/><path d="M4 19.5A6 6 0 0 1 9.5 14"/><path d="M14.5 9.5A6 6 0 0 1 17 4"/><path d="M14 9a3 3 0 0 1-3 3"/>',
+  'flame': '<path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0a5 5 0 0 1 1-3a1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"/>',
+  'crown': '<path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.16 9.795a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294zM5 21h14"/>',
+  'sparkles': '<path d="M9.937 15.376a1 1 0 0 0-1.874 0L5.245 18.75l1.874.937 2.874-3.311z"/><path d="M14.063 9.624a1 1 0 0 0-1.874 0L10.371 13.5l1.874.937 2.874-3.311z"/><circle cx="4" cy="20" r="2"/>',
+  'graduation-cap': '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0zM22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>',
+  'gem': '<path d="M10.5 3L8 9l4 13l4-13l-2.5-6"/><path d="M17 3a2 2 0 0 1 1.6.8l3 4a2 2 0 0 1 .013 2.382l-7.99 10.986a2 2 0 0 1-3.247 0l-7.99-10.986A2 2 0 0 1 2.4 7.8l2.998-3.997A2 2 0 0 1 7 3zM2 9h20"/>',
 }
 
 // 获取图标路径
@@ -162,27 +183,19 @@ function getIconPath(name) {
   return BUILT_IN_ICONS[name] || null
 }
 
-// 构建 SVG style
-const computedStyle = computed(() => {
-  const path = getIconPath(props.name)
-
-  if (!path) {
-    // 图标不存在时返回空
-    return {}
-  }
-
+// 构建 SVG
+const iconDataUri = computed(() => {
+  const p = getIconPath(props.name) || '<circle cx="12" cy="12" r="10"/>'
   const strokeColor = props.color === '#1A1A2E' ? 'currentColor' : props.color
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`
-  const uri = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`
+})
 
-  return {
-    width: props.size,
-    height: props.size,
-    backgroundImage: uri,
-    backgroundSize: 'contain',
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'center',
-  }
+const iconStyle = computed(() => {
+  const s = props.size
+  const w = typeof s === 'number' ? `${s}rpx` : s
+  const h = typeof s === 'number' ? `${s}rpx` : s
+  return { width: w, height: h }
 })
 </script>
 
@@ -191,6 +204,14 @@ const computedStyle = computed(() => {
   display: inline-block;
   vertical-align: middle;
   flex-shrink: 0;
+  position: relative;
+}
+.l-icon image {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 .l-icon-clickable {
   cursor: pointer;

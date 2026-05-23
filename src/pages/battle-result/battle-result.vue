@@ -8,6 +8,9 @@
       <view v-if="rankUp" class="rank-up-banner">
         <text class="rank-up-text">段位提升！</text>
       </view>
+      <view v-if="xpLevelUp" class="levelup-banner">
+        <text class="levelup-text"><LIcon :name="xpLevelUp.current.icon" :size="32" /> 等级提升！{{ xpLevelUp.prev.name }} → {{ xpLevelUp.current.name }}</text>
+      </view>
 
       <view :class="['result-circle', data.won ? 'circle-win' : data.myScore === data.oppScore ? 'circle-draw' : 'circle-lose']">
         <LIcon v-if="data.won" name="check" :size="72" color="#FFFFFF" /><LIcon v-else-if="data.myScore === data.oppScore" name="minus" :size="72" color="#FFFFFF" /><LIcon v-else name="x" :size="72" color="#FFFFFF" />
@@ -78,15 +81,16 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { getRankFromWins } from '@/utils/helpers'
-import { getPlayerRank, loadBattleStats } from '@/utils/storage'
-import { playBattleWin, playBattleLose } from '@/utils/sound'
+import { getRankFromWins, getLevelFromXP } from '@/utils/helpers'
+import { getPlayerRank, loadBattleStats, getTotalXP } from '@/utils/storage'
+import { playBattleWin, playBattleLose, speakBattleWin } from '@/utils/sound'
 import Fireworks from '@/components/Fireworks.vue'
 import LIcon from '@/components/LIcon.vue'
 
 const data = ref({ myScore: 0, oppScore: 0, oppName: '', won: false, questions: [], combo: 0 })
 const rank = ref(getPlayerRank())
 const prevRank = ref(null)
+const xpLevelUp = ref(null)
 
 onLoad((query) => {
   if (query.data) {
@@ -94,6 +98,7 @@ onLoad((query) => {
   }
   if (data.value.won) {
     playBattleWin()
+    speakBattleWin()
   } else if (data.value.myScore !== data.value.oppScore) {
     playBattleLose()
   }
@@ -105,6 +110,13 @@ onLoad((query) => {
       prevRank.value = oldRank
       rank.value = current
     }
+  }
+  const battleXP = data.value.won ? 30 : (data.value.myScore === data.value.oppScore ? 15 : 10)
+  const totalXP = getTotalXP()
+  const nowLevel = getLevelFromXP(totalXP)
+  const beforeLevel = getLevelFromXP(totalXP - battleXP)
+  if (nowLevel.level > beforeLevel.level) {
+    xpLevelUp.value = { prev: beforeLevel, current: nowLevel }
   }
 })
 
@@ -136,6 +148,12 @@ function goBattle() { uni.redirectTo({ url: '/pages/battle-match/battle-match' }
   padding: 8rpx 40rpx; border-radius: 999rpx;
 }
 .rank-up-text { font-size: 28rpx; font-weight: 800; color: #FFFFFF; }
+.levelup-banner {
+  background: linear-gradient(135deg, #F5A623, #FFB300);
+  padding: 16rpx 40rpx; border-radius: 999rpx;
+  animation: levelPulse 0.8s ease-in-out 2;
+}
+.levelup-text { font-size: 30rpx; font-weight: 800; color: #FFFFFF; }
 
 .result-circle {
   width: 128rpx; height: 128rpx; border-radius: 50%;
@@ -194,11 +212,11 @@ function goBattle() { uni.redirectTo({ url: '/pages/battle-match/battle-match' }
 .result-actions { display: flex; gap: 24rpx; margin-top: 24rpx; width: 100%; max-width: 600rpx; }
 .btn-secondary:active { background: rgba(232,87,58,0.04); transform: scale(0.98); }
 .btn-secondary {
-  flex: 1; background: #FFFFFF; color: #E8573A; border: 3rpx solid #E8E5DF;
+  flex: 1; background: #FFFFFF; color: #E8573A; border: 3rpx solid #EAEAEA;
   padding: 32rpx; border-radius: 999rpx; font-size: 34rpx; font-weight: 600;
 }
 .btn-primary:active {
-  background: #D04830; transform: scale(0.98); box-shadow: 0 4rpx 16rpx rgba(26,26,46,0.08);
+  background: #C04020; transform: scale(0.98); box-shadow: 0 4rpx 16rpx rgba(26,26,46,0.08);
 }
 .btn-primary {
   flex: 1; background: #E8573A; color: #FFFFFF;
@@ -208,5 +226,9 @@ function goBattle() { uni.redirectTo({ url: '/pages/battle-match/battle-match' }
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-12rpx); }
+}
+@keyframes levelPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 }
 </style>

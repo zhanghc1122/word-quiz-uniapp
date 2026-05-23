@@ -5,6 +5,16 @@
       <text class="header-title">选择年级</text>
       <view class="spacer"></view>
     </view>
+    <view class="edition-selector">
+      <view
+        v-for="ed in editions"
+        :key="ed.value"
+        :class="['edition-pill', selectedEdition === ed.value ? 'selected' : '']"
+        @tap.stop="selectedEdition = ed.value"
+      >
+        <text class="edition-text">{{ ed.label }}</text>
+      </view>
+    </view>
     <view class="grade-grid">
       <view
         v-for="g in 6" :key="g"
@@ -21,10 +31,16 @@
 <script setup>
 import { ref } from 'vue'
 import { GRADE_NAMES } from '@/utils/helpers'
+import { setEdition } from '@/utils/edition'
 import LIcon from '@/components/LIcon.vue'
 
 const gradeNames = GRADE_NAMES
 const selectedGrade = ref(null)
+const selectedEdition = ref(uni.getStorageSync('currentEdition') || 'pep')
+const editions = [
+  { label: '人教版', value: 'pep' },
+  { label: '沪教版', value: 'shanghai' },
+]
 
 function goBack() {
   uni.redirectTo({ url: '/pages/splash/splash' })
@@ -33,8 +49,9 @@ function goBack() {
 function pickGrade(g) {
   selectedGrade.value = g
   uni.setStorageSync('currentGrade', g)
+  setEdition(selectedEdition.value)
   setTimeout(() => {
-    uni.redirectTo({ url: '/pages/home/home' })
+    uni.switchTab({ url: '/pages/home/home' })
   }, 300)
 }
 </script>
@@ -53,8 +70,22 @@ function pickGrade(g) {
 .back-arrow { display: none; }
 .header-title { font-size: 40rpx; font-weight: 700; color: #1A1A2E; }
 .spacer { width: 80rpx; }
+.edition-selector {
+  display: flex; gap: 24rpx; padding: 0 40rpx 32rpx;
+}
+.edition-pill {
+  flex: 1; padding: 20rpx; border-radius: 20rpx; text-align: center;
+  background: #FFFFFF; border: 3rpx solid transparent;
+  box-shadow: 0 4rpx 16rpx rgba(26,26,46,0.06);
+  transition: all 0.3s;
+}
+.edition-pill.selected {
+  border-color: #A855C7;
+  background: rgba(168,85,199,0.08);
+}
+.edition-text { font-size: 30rpx; font-weight: 600; color: #1A1A2E; }
 .grade-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24rpx; padding: 32rpx 40rpx;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24rpx; padding: 0 40rpx;
 }
 .grade-card {
   background: #FFFFFF; border-radius: 28rpx; padding: 48rpx 24rpx;

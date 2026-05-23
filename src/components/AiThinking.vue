@@ -8,14 +8,15 @@
       <view class="dot d2"></view>
       <view class="dot d3"></view>
     </view>
-    <text v-else :class="['resolved-icon', correct ? 'icon-correct' : 'icon-wrong']">{{ correct ? '✓' : '✗' }}</text>
+    <text v-else :class="['resolved-icon', correct ? 'icon-correct' : 'icon-wrong']"><LIcon v-if="!correct" name="octagon-x" :size="32" color="#D94848" />
+    <LIcon v-else name="circle-check-big" :size="32" color="#2B9E8F" /></text>
   </view>
 </template>
 
 <script setup>
 const props = defineProps({
   visible: Boolean,
-  opponentAvatar: { type: Object, default: () => ({ initial: 'A', color: '#7C5CBF' }) },
+  opponentAvatar: { type: Object, default: () => ({ initial: 'A', color: '#A855C7' }) },
   resolved: { type: Boolean, default: false },
   correct: { type: Boolean, default: true },
 })

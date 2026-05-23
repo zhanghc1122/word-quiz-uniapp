@@ -31,7 +31,7 @@ const currentColor = computed(() => {
 const ringStyle = computed(() => {
   const deg = fraction.value * 360
   return {
-    background: `conic-gradient(${currentColor.value} ${deg}deg, #E8E5DF ${deg}deg)`,
+    background: `conic-gradient(${currentColor.value} ${deg}deg, #EAEAEA ${deg}deg)`,
   }
 })
 

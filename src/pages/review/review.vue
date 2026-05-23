@@ -3,7 +3,7 @@
     <view class="header">
       <view class="btn-back" @tap="goHome"><LIcon name="arrow-left" size="48rpx" /></view>
       <text class="header-title">错题复习</text>
-      <text class="word-counter">{{ reviewIndex + 1 }} / {{ reviewWords.length }}</text>
+      <text v-if="reviewWords.length > 0" class="word-counter">{{ reviewIndex + 1 }} / {{ reviewWords.length }}</text>
     </view>
     <view v-if="reviewWords.length > 0" class="quiz-area">
       <view class="question-box">
@@ -18,10 +18,12 @@
         >{{ opt.meaning }}</button>
       </view>
     </view>
-    <view v-else class="empty">
-      <view class="empty-circle"><LIcon name="check" :size="64" color="#FFFFFF" /></view>
-      <text class="empty-text">暂无错题，太棒了！</text>
-    </view>
+    <EmptyState
+      v-if="reviewWords.length === 0"
+      icon="check-circle"
+      title="太棒了！暂无错题"
+      desc="学习愉快，继续保持吧～"
+    />
     <WordToast :visible="showToastFlag" :isCorrect="toastCorrect" :customText="toastText" />
   </view>
 </template>
@@ -30,15 +32,18 @@
 import { ref, computed, onMounted } from 'vue'
 import { wordsDB } from '@/utils/words'
 import { seededShuffle } from '@/utils/helpers'
-import { loadStats } from '@/utils/storage'
+import { loadStats, saveReviewComplete, removeWrongWord } from '@/utils/storage'
+import { getEdition } from '@/utils/edition'
+import EmptyState from '@/components/EmptyState.vue'
 import { playCorrect, playWrong, playClick } from '@/utils/sound'
 import WordToast from '@/components/WordToast.vue'
 import LIcon from '@/components/LIcon.vue'
 
 const grade = ref(uni.getStorageSync('currentGrade') || 3)
-const allWords = wordsDB[grade.value] || []
+const edition = getEdition()
+const allWords = wordsDB[edition][grade.value] || []
 const stats = loadStats()
-const wrongIds = stats[`wrong_g${grade.value}`] || []
+const wrongIds = stats[`wrong_g${grade.value}_${edition}`] || []
 
 const reviewWords = wrongIds.map(id => allWords.find(w => w.word === id)).filter(Boolean).slice(0, 10)
 const reviewIndex = ref(0)
@@ -82,6 +87,7 @@ function answer(index) {
 
   if (index === correctIdx.value) {
     playCorrect()
+    removeWrongWord(grade.value, reviewWords[reviewIndex.value].word, edition)
     flashToast(true, '')
   } else {
     playWrong()
@@ -95,9 +101,10 @@ function answer(index) {
     if (reviewIndex.value < reviewWords.length) {
       buildOptions()
     } else {
+      saveReviewComplete(grade.value, reviewWords.length, edition)
       uni.showModal({
         title: '复习完成！',
-        content: '所有错题已复习完毕',
+        content: `太棒了！复习了 ${reviewWords.length} 道题，获得 +${reviewWords.length * 2} XP`,
         showCancel: false,
         success: () => { uni.navigateBack({ delta: 1 }) }
       })
@@ -134,18 +141,11 @@ function goHome() {
 .question-prompt { font-size: 48rpx; font-weight: 700; color: #1A1A2E; }
 .options { display: flex; flex-direction: column; gap: 24rpx; padding: 0 40rpx; }
 .option-btn {
-  padding: 36rpx 40rpx; background: #FFFFFF; border: 3rpx solid #E8E5DF;
+  padding: 36rpx 40rpx; background: #FFFFFF; border: 3rpx solid #EAEAEA;
   border-radius: 20rpx; font-size: 36rpx; font-weight: 500; color: #1A1A2E; text-align: left;
 }
-.option-btn:active { background: rgba(124,92,191,0.08); transform: scale(0.98); }
+.option-btn:active { background: rgba(168,85,199,0.08); transform: scale(0.98); }
 .option-btn.correct { border-color: #2B9E8F; background: rgba(43,158,143,0.08); color: #2B9E8F; }
 .option-btn.wrong { border-color: #D94848; background: rgba(217,72,72,0.08); color: #D94848; }
 .option-btn.disabled { opacity: 0.5; }
-.empty { display: flex; flex-direction: column; align-items: center; padding-top: 200rpx; gap: 24rpx; }
-.empty-circle {
-  width: 120rpx; height: 120rpx; border-radius: 50%; background: #2B9E8F;
-  display: flex; align-items: center; justify-content: center;
-}
-.empty-check { display: none; }
-.empty-text { font-size: 34rpx; color: #6B7280; }
 </style>

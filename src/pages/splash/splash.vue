@@ -36,11 +36,12 @@ function goGrade() {
 .splash-icon {
   width: 240rpx;
   height: 240rpx;
-  background: #E8573A;
+  background: linear-gradient(135deg, #E8573A, #F08060);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 16rpx 48rpx rgba(232,87,58,0.35), inset 0 -8rpx 24rpx rgba(0,0,0,0.15);
   animation: float 3s ease-in-out infinite;
 }
 .icon-letter {
@@ -68,7 +69,7 @@ function goGrade() {
   box-shadow: 0 8rpx 32rpx rgba(26,26,46,0.08);
 }
 .btn-start:active {
-  background: #D04830;
+  background: #C04020;
   transform: scale(0.96);
   box-shadow: 0 4rpx 16rpx rgba(26,26,46,0.08);
 }

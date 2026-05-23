@@ -42,7 +42,10 @@
         <text class="detail-avatar-letter">{{ selectedOpp.avatar.initial }}</text>
       </view>
       <text class="detail-name">{{ selectedOpp.name }}</text>
-      <text class="detail-strategy">{{ strategyInfo.emoji }} {{ strategyInfo.label }} · {{ strategyInfo.desc }}</text>
+      <view class="detail-strategy-row">
+        <LIcon :name="strategyInfo.icon" :size="24" color="#A855C7" />
+        <text class="detail-strategy-text">{{ strategyInfo.label }} · {{ strategyInfo.desc }}</text>
+      </view>
       <view class="detail-stats">
         <view class="detail-stat">
           <text class="stat-val">{{ diffLabel }}</text>
@@ -73,6 +76,7 @@
 import { ref, computed } from 'vue'
 import { AI_OPPONENTS, AI_DIFFICULTY, AI_STRATEGY } from '@/utils/helpers'
 import { loadBattleStats } from '@/utils/storage'
+import { getEdition } from '@/utils/edition'
 import OpponentCard from '@/components/OpponentCard.vue'
 import LIcon from '@/components/LIcon.vue'
 
@@ -114,7 +118,7 @@ function startMatch() {
   matching.value = true
   setTimeout(() => {
     uni.redirectTo({
-      url: `/pages/battle/battle?opponentId=${selectedOppId.value}&difficulty=${selectedDiff.value}`
+      url: `/pages/battle/battle?opponentId=${selectedOppId.value}&difficulty=${selectedDiff.value}&edition=${getEdition()}`
     })
   }, 2500)
 }
@@ -149,6 +153,7 @@ function goBack() {
   transition: all 0.3s;
 }
 .diff-card.diff-selected {
+  background: rgba(232,87,58,0.06);
   box-shadow: 0 8rpx 32rpx rgba(26,26,46,0.08);
 }
 .diff-label { font-size: 30rpx; font-weight: 700; }
@@ -166,7 +171,8 @@ function goBack() {
 }
 .detail-avatar-letter { font-size: 52rpx; font-weight: 700; color: #FFFFFF; }
 .detail-name { font-size: 36rpx; font-weight: 800; color: #1A1A2E; }
-.detail-strategy { font-size: 26rpx; color: #6B7280; }
+.detail-strategy-text { font-size: 26rpx; color: #6B7280; }
+.detail-strategy-row { display: flex; align-items: center; gap: 8rpx; }
 .detail-stats { display: flex; gap: 64rpx; margin-top: 16rpx; }
 .detail-stat { display: flex; flex-direction: column; align-items: center; gap: 4rpx; }
 .stat-val { font-size: 32rpx; font-weight: 700; color: #E8573A; }

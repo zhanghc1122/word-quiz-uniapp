@@ -1,7 +1,8 @@
 <template>
   <view v-if="visible" class="toast-overlay">
     <view :class="['toast', isCorrect ? 'correct' : 'wrong']">
-      <text class="toast-symbol">{{ isCorrect ? '✓' : '✗' }}</text>
+      <LIcon v-if="isCorrect" name="circle-check-big" :size="96" color="#FFFFFF" />
+    <LIcon v-else name="octagon-x" :size="96" color="#FFFFFF" />
       <text class="toast-text">{{ text }}</text>
     </view>
   </view>
@@ -51,7 +52,6 @@ watch(() => props.visible, (val) => {
   background: #D94848;
   box-shadow: 0 8rpx 32rpx rgba(26,26,46,0.08);
 }
-.toast-symbol { font-size: 96rpx; color: #fff; }
 .toast-text { font-size: 36rpx; font-weight: 800; color: #fff; }
 @keyframes toastPop {
   0%   { transform: scale(0); opacity: 0; }

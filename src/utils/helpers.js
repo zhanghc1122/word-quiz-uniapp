@@ -1,6 +1,49 @@
 export const GRADE_NAMES = ['', '一年级', '二年级', '三年级', '四年级', '五年级', '六年级']
 
-export const LEVELS = ['勤学者', '小达人', '单词王', '英语星', '超级学霸']
+export const EDITION_IDS = { pep: 'pep', shanghai: 'shanghai' }
+export const EDITION_NAMES = { pep: '人教版', shanghai: '沪教版' }
+export const DEFAULT_EDITION = 'pep'
+
+export function getEditionLabel(edition) {
+  return EDITION_NAMES[edition] || edition || DEFAULT_EDITION
+}
+
+export const XP_LEVELS = [
+  { level: 1,  name: '小芽苗',   icon: 'sprout',        minXP: 0,    color: '#8BC34A' },
+  { level: 2,  name: '小学徒',   icon: 'book-open',     minXP: 30,   color: '#4CAF50' },
+  { level: 3,  name: '勤学者',   icon: 'pencil',        minXP: 80,   color: '#2B9E8F' },
+  { level: 4,  name: '小达人',   icon: 'target',        minXP: 160,  color: '#3B82C4' },
+  { level: 5,  name: '词汇星',   icon: 'star',          minXP: 280,  color: '#F5A623' },
+  { level: 6,  name: '单词王',   icon: 'crown',         minXP: 450,  color: '#E8573A' },
+  { level: 7,  name: '英语星',   icon: 'sparkles',      minXP: 700,  color: '#A855C7' },
+  { level: 8,  name: '超级学霸', icon: 'graduation-cap', minXP: 1000, color: '#E91E63' },
+  { level: 9,  name: '词汇大师', icon: 'trophy',        minXP: 1400, color: '#FF6F00' },
+  { level: 10, name: '传奇状元', icon: 'gem',           minXP: 2000, color: '#9C27B0' },
+]
+
+export function getLevelFromXP(totalXP) {
+  let current = XP_LEVELS[0]
+  for (const lv of XP_LEVELS) {
+    if (totalXP >= lv.minXP) current = lv
+  }
+  return current
+}
+
+export function getNextLevel(totalXP) {
+  const current = getLevelFromXP(totalXP)
+  const idx = XP_LEVELS.findIndex(lv => lv.level === current.level)
+  if (idx >= XP_LEVELS.length - 1) return null
+  return XP_LEVELS[idx + 1]
+}
+
+export function getXPProgress(totalXP) {
+  const current = getLevelFromXP(totalXP)
+  const next = getNextLevel(totalXP)
+  if (!next) return { percent: 100, currentXP: totalXP - current.minXP, neededXP: 0 }
+  const rangeXP = next.minXP - current.minXP
+  const progressXP = totalXP - current.minXP
+  return { percent: Math.min(100, Math.round((progressXP / rangeXP) * 100)), currentXP: progressXP, neededXP: rangeXP }
+}
 
 export const TOAST_CORRECT = [
   { text: '答对啦！' },
@@ -23,7 +66,7 @@ export const AI_STRATEGY = {
     speedBonus: -300,
     accuracyBonus: 0.05,
     streakThreshold: 3,
-    emoji: '▸',
+    icon: 'zap',
   },
   steady: {
     label: '稳健型',
@@ -31,7 +74,7 @@ export const AI_STRATEGY = {
     speedBonus: 0,
     accuracyBonus: 0,
     streakThreshold: 5,
-    emoji: '●',
+    icon: 'circle-dot',
   },
   tricky: {
     label: '狡猾型',
@@ -40,12 +83,12 @@ export const AI_STRATEGY = {
     accuracyBonus: -0.03,
     earlyFailCount: 2,
     lateAccuracyBoost: 0.15,
-    emoji: '~',
+    icon: 'move-horizontal',
   },
 }
 
 export const AI_OPPONENTS = [
-  { id: 'zhi', name: '小智同学', avatar: { initial: '智', color: '#7C5CBF' }, personality: 'steady', difficultyLevels: ['easy', 'medium', 'hard'] },
+  { id: 'zhi', name: '小智同学', avatar: { initial: '智', color: '#A855C7' }, personality: 'steady', difficultyLevels: ['easy', 'medium', 'hard'] },
   { id: 'hua', name: '学霸小花', avatar: { initial: '花', color: '#E8573A' }, personality: 'aggressive', difficultyLevels: ['medium', 'hard'] },
   { id: 'hou', name: '快乐小猴', avatar: { initial: '猴', color: '#F5A623' }, personality: 'tricky', difficultyLevels: ['easy', 'medium'] },
   { id: 'tu', name: '勇敢小兔', avatar: { initial: '兔', color: '#2B9E8F' }, personality: 'aggressive', difficultyLevels: ['easy', 'medium', 'hard'] },
@@ -57,7 +100,7 @@ export const RANK_TIERS = [
   { id: 'silver',   name: '白银', icon: '◆', minWins: 3,  color: '#A8A8A8' },
   { id: 'gold',     name: '黄金', icon: '★', minWins: 8,  color: '#F5A623' },
   { id: 'platinum', name: '铂金', icon: '★', minWins: 15, color: '#2B9E8F' },
-  { id: 'diamond',  name: '钻石', icon: '✦', minWins: 25, color: '#7C5CBF' },
+  { id: 'diamond',  name: '钻石', icon: '✦', minWins: 25, color: '#A855C7' },
 ]
 
 export function getRankFromWins(wins) {
@@ -68,9 +111,19 @@ export function getRankFromWins(wins) {
   return rank
 }
 
-export function getTodayKey(grade) {
+export function getDateString() {
   const d = new Date()
-  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}_g${grade}`
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+export function getYesterdayString() {
+  const d = new Date()
+  d.setDate(d.getDate() - 1)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+export function getTodayKey(grade, edition = DEFAULT_EDITION) {
+  return `${getDateString()}_g${grade}_${edition}`
 }
 
 export function getDaySeed() {

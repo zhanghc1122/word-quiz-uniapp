@@ -1,29 +1,35 @@
-// Colors
+// Colors — Brand: Coral Orange
 $primary: #E8573A;
-$primary-hover: #D44A2E;
+$primary-hover: #C04020;
 $primary-bg: rgba(232, 87, 58, 0.08);
+$primary-light: #F08060;
+$accent: #A855C7;          // Rose purple — secondary accent
+$accent-bg: rgba(168, 85, 199, 0.08);
+$accent-mid: #C978B8;      // Light rose for gradients
 $secondary: #2B9E8F;
 $secondary-bg: rgba(43, 158, 143, 0.08);
-$accent: #F5A623;
-$accent-bg: rgba(245, 166, 35, 0.08);
 $danger: #D94848;
 $danger-bg: rgba(217, 72, 72, 0.08);
-$purple: #7C5CBF;
-$purple-bg: rgba(124, 92, 191, 0.08);
+$warning: #F5A623;
+$warning-bg: rgba(245, 166, 35, 0.08);
+$levelup: #FFB300;
+$levelup-bg: rgba(255, 179, 0, 0.1);
+$purple: #A855C7;
+$purple-bg: rgba(168, 85, 199, 0.08);
 $bg: #F7F5F0;
 $card: #FFFFFF;
 $surface: #FFFFFF;
 $text: #1A1A2E;
 $text-secondary: #6B7280;
 $text-tertiary: #9CA3AF;
-$border: #E8E5DF;
+$border: #EAEAEA;
 $divider: #F0EDE8;
 
 // Avatar palette
 $avatar-1: #E8573A;
 $avatar-2: #2B9E8F;
 $avatar-3: #F5A623;
-$avatar-4: #7C5CBF;
+$avatar-4: #A855C7;
 $avatar-5: #3B82C4;
 
 // Typography

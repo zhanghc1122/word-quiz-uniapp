@@ -9,12 +9,26 @@
     { "path": "pages/battle/battle", "style": { "navigationStyle": "custom" } },
     { "path": "pages/result/result", "style": { "navigationStyle": "custom" } },
     { "path": "pages/battle-result/battle-result", "style": { "navigationStyle": "custom" } },
-    { "path": "pages/review/review", "style": { "navigationStyle": "custom" } }
+    { "path": "pages/review/review", "style": { "navigationStyle": "custom" } },
+    { "path": "pages/my/my", "style": { "navigationStyle": "custom", "app-plus": { "titleNView": false } } },
+    { "path": "pages/calendar/calendar", "style": { "navigationStyle": "custom", "app-plus": { "titleNView": false } } }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "单词大闯关",
     "navigationBarBackgroundColor": "#F7F5F0",
     "backgroundColor": "#F7F5F0"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#9CA3AF",
+    "selectedColor": "#E8573A",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/home/home", "text": "首页" },
+      { "pagePath": "pages/calendar/calendar", "text": "日历" },
+      { "pagePath": "pages/my/my", "text": "我的" }
+    ]
   }
 }

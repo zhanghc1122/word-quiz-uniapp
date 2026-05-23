@@ -6,14 +6,15 @@
     <view class="opp-info">
       <text class="opp-name">{{ opponent.name }}</text>
       <view class="opp-badges">
-        <text class="badge-personality" :style="{ background: personalityColor }">{{ strategy.emoji }} {{ strategy.label }}</text>
+        <LIcon :name="strategy.icon" :size="20" />
+        <text class="badge-personality" :style="{ color: personalityColor }">{{ strategy.label }}</text>
       </view>
       <text v-if="winRateText" class="opp-winrate">胜率 {{ winRateText }}</text>
     </view>
     <view v-if="!compact" class="opp-desc">
       <text class="opp-desc-text">{{ strategy.desc }}</text>
       <view class="opp-difficulty-dots">
-        <text v-for="d in opponent.difficultyLevels" :key="d" class="diff-dot" :style="{ color: difficultyColors[d] }">●</text>
+        <view v-for="d in opponent.difficultyLevels" :key="d" class="diff-dot" :style="{ background: difficultyColors[d] }"></view>
       </view>
     </view>
   </view>
@@ -22,6 +23,7 @@
 <script setup>
 import { computed } from 'vue'
 import { AI_STRATEGY, AI_DIFFICULTY } from '@/utils/helpers'
+import LIcon from '@/components/LIcon.vue'
 
 const props = defineProps({
   opponent: { type: Object, required: true },

@@ -41,7 +41,7 @@ function startFireworks() {
       ctx.scale(dpr, dpr)
 
       const particles = []
-      const colors = ['#E8573A', '#2B9E8F', '#F5A623', '#7C5CBF', '#3B82C4', '#D94848', '#CD7F32', '#A8A8A8']
+      const colors = ['#E8573A', '#2B9E8F', '#F5A623', '#A855C7', '#3B82C4', '#D94848', '#CD7F32', '#A8A8A8']
 
       function burst(x, y) {
         const count = 40 + Math.floor(Math.random() * 20)
