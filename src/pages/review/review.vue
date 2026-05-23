@@ -31,6 +31,7 @@ import { ref, computed, onMounted } from 'vue'
 import { wordsDB } from '@/utils/words'
 import { seededShuffle } from '@/utils/helpers'
 import { loadStats } from '@/utils/storage'
+import { playCorrect, playWrong, playClick } from '@/utils/sound'
 import WordToast from '@/components/WordToast.vue'
 import LIcon from '@/components/LIcon.vue'
 
@@ -75,12 +76,15 @@ function flashToast(correct, text) {
 
 function answer(index) {
   if (answered.value) return
+  playClick()
   answered.value = true
   selectedIdx.value = index
 
   if (index === correctIdx.value) {
+    playCorrect()
     flashToast(true, '')
   } else {
+    playWrong()
     flashToast(false, '加油，你一定能记住！')
   }
 

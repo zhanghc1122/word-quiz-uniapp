@@ -58,6 +58,7 @@ import { onLoad } from '@dcloudio/uni-app'
 import { wordsDB } from '@/utils/words'
 import { AI_OPPONENTS, simulateAiAnswer } from '@/utils/helpers'
 import { saveBattleResult } from '@/utils/storage'
+import { playCorrect, playWrong, playCombo, playTimeout, playClick } from '@/utils/sound'
 import WordToast from '@/components/WordToast.vue'
 import ComboIndicator from '@/components/ComboIndicator.vue'
 import AiThinking from '@/components/AiThinking.vue'
@@ -136,7 +137,7 @@ function flashCombo() {
   setTimeout(() => { showCombo.value = false }, 1300)
 }
 
-function onTimeout() { if (!answered.value) answer(-1) }
+function onTimeout() { playTimeout(); if (!answered.value) answer(-1) }
 
 function confirmQuit() {
   if (battleIndex.value > 0 || myScore.value > 0 || oppScore.value > 0) {
@@ -156,15 +157,19 @@ function confirmQuit() {
 
 function answer(index) {
   if (answered.value) return
+  playClick()
   answered.value = true; selectedIdx.value = index; timerActive.value = false
   const q = questions.value[battleIndex.value]; const startTime = Date.now()
   const iCorrect = index === q.correctIndex
   if (iCorrect) {
     myScore.value++; combo.value++
     if (combo.value > maxCombo.value) maxCombo.value = combo.value
+    playCorrect()
+    if (combo.value >= 2) playCombo()
     flashToast(true, ''); flashCombo()
   } else {
-    combo.value = 0; flashToast(false, '没关系，再接再厉！')
+    combo.value = 0; playWrong()
+    flashToast(false, '没关系，再接再厉！')
   }
 
   const aiResult = simulateAiAnswer(battleIndex.value, 10, combo.value, opponentId.value, difficulty.value)

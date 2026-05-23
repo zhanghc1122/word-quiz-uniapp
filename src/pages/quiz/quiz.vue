@@ -41,6 +41,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { wordsDB } from '@/utils/words'
 import { getDaySeed, seededShuffle } from '@/utils/helpers'
 import { saveQuizResult } from '@/utils/storage'
+import { playCorrect, playWrong, playWin, playLose, playTimeout, playClick } from '@/utils/sound'
 import WordToast from '@/components/WordToast.vue'
 import LIcon from '@/components/LIcon.vue'
 
@@ -97,15 +98,18 @@ function flashToast(correct, text) {
 
 function answer(index) {
   if (answered.value) return
+  playClick()
   answered.value = true
   selectedIdx.value = index
 
   const q = questions[quizIndex.value]
   if (index === q.correctIndex) {
     correctCount.value++
+    playCorrect()
     flashToast(true, '')
   } else {
     wrongCount.value++
+    playWrong()
     wrongList.value.push({
       word: q.word.word,
       yourAnswer: q.options[index],
@@ -119,7 +123,8 @@ function answer(index) {
     answered.value = false
     selectedIdx.value = -1
     if (quizIndex.value >= 10) {
-      finishQuiz()
+      playTimeout()
+      setTimeout(() => finishQuiz(), 300)
     }
   }, 1000)
 }

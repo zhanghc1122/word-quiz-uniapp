@@ -54,6 +54,7 @@ import { ref, computed } from 'vue'
 import { wordsDB } from '@/utils/words'
 import { getDaySeed, seededShuffle, getTodayKey } from '@/utils/helpers'
 import { loadStats, saveLearnProgress } from '@/utils/storage'
+import { playClick } from '@/utils/sound'
 import LIcon from '@/components/LIcon.vue'
 
 const grade = ref(uni.getStorageSync('currentGrade') || 3)
@@ -87,12 +88,14 @@ function speakWord() {
 
 function prev() {
   if (currentIndex.value > 0) {
+    playClick()
     currentIndex.value--
     triggerAnim()
   }
 }
 
 function next() {
+  playClick()
   saveLearnProgress(grade.value, todayWords[currentIndex.value].word)
   if (currentIndex.value < 9) {
     currentIndex.value++

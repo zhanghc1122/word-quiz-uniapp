@@ -50,12 +50,18 @@ import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import Fireworks from '@/components/Fireworks.vue'
 import LIcon from '@/components/LIcon.vue'
+import { playWin, playLose } from '@/utils/sound'
 
 const data = ref({ correct: 0, wrong: 0, time: '0:00', wrongList: [] })
 
 onLoad((query) => {
   if (query.data) {
     data.value = JSON.parse(decodeURIComponent(query.data))
+  }
+  if (data.value.correct >= 7) {
+    playWin()
+  } else {
+    playLose()
   }
 })
 

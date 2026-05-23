@@ -80,6 +80,7 @@ import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { getRankFromWins } from '@/utils/helpers'
 import { getPlayerRank, loadBattleStats } from '@/utils/storage'
+import { playBattleWin, playBattleLose } from '@/utils/sound'
 import Fireworks from '@/components/Fireworks.vue'
 import LIcon from '@/components/LIcon.vue'
 
@@ -90,6 +91,11 @@ const prevRank = ref(null)
 onLoad((query) => {
   if (query.data) {
     data.value = JSON.parse(decodeURIComponent(query.data))
+  }
+  if (data.value.won) {
+    playBattleWin()
+  } else if (data.value.myScore !== data.value.oppScore) {
+    playBattleLose()
   }
   const current = getPlayerRank()
   const bs = loadBattleStats()
