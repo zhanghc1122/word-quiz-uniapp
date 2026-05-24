@@ -127,7 +127,7 @@ const myAcc = computed(() => Math.round(data.value.myScore / 10 * 100))
 const oppAcc = computed(() => Math.round(data.value.oppScore / 10 * 100))
 const exp = computed(() => data.value.won ? 30 : data.value.myScore === data.value.oppScore ? 15 : 10)
 
-function goHome() { uni.redirectTo({ url: '/pages/home/home' }) }
+function goHome() { uni.switchTab({ url: '/pages/home/home' }) }
 function goBattle() { uni.redirectTo({ url: '/pages/battle-match/battle-match' }) }
 </script>
 

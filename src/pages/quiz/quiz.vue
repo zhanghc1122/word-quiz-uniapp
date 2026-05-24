@@ -50,17 +50,16 @@ import { onLoad } from '@dcloudio/uni-app'
 const grade = ref(uni.getStorageSync('currentGrade') || 3)
 const edition = getEdition()
 const isCheckinMode = ref(false)
-const allWords = wordsDB[edition][grade.value] || []
+
+const allWords = wordsDB[edition]?.[grade.value] || []
 const todayKey = getTodayKey(grade.value, edition)
 
-// Use the same word pool from learn page if available, otherwise generate fresh
 const savedWordStrings = uni.getStorageSync('todayLearnedWords_' + todayKey)
 const savedWordPool = savedWordStrings ? JSON.parse(savedWordStrings) : null
 const todayWords = savedWordPool
   ? savedWordPool.map(w => allWords.find(x => x.word === w)).filter(Boolean)
   : seededShuffle([...allWords], getDaySeed()).slice(0, 10)
 
-// Clear the saved pool so refresh doesn't reuse stale data
 if (savedWordPool) uni.removeStorageSync('todayLearnedWords_' + todayKey)
 
 const questions = todayWords.map((w, i) => {
@@ -97,9 +96,19 @@ const timerText = computed(() => {
 
 onLoad((query) => {
   if (query.mode === 'checkin') isCheckinMode.value = true
+  if (allWords.length === 0 || todayWords.length === 0) return
+  startQuestionTimer()
 })
 
 onMounted(() => {
+  if (allWords.length === 0) {
+    uni.showModal({ title: '提示', content: '当前年级暂无单词数据，请切换年级后重试。', showCancel: false, success: () => { uni.navigateBack() } })
+    return
+  }
+  if (todayWords.length === 0) {
+    uni.showModal({ title: '提示', content: '没有可测验的单词，请先学习。', showCancel: false, success: () => { uni.navigateBack() } })
+    return
+  }
   timerInterval = setInterval(() => { seconds.value++ }, 1000)
 })
 
@@ -120,7 +129,7 @@ let questionTimer = null
 let quizFinished = false
 let submitting = false
 let timerStarted = false
-const QUESTION_TIME = 15 // seconds per question
+const QUESTION_TIME = 15
 
 function startQuestionTimer() {
   if (questionTimer) clearTimeout(questionTimer)

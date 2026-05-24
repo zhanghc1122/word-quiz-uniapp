@@ -114,7 +114,7 @@ const message = computed(() => {
 })
 const showFireworks = computed(() => data.value.correct >= 8 || !!prevXPLevel.value || (data.value.checkin && data.value.correct === 10))
 
-function goHome() { uni.redirectTo({ url: '/pages/home/home' }) }
+function goHome() { uni.switchTab({ url: '/pages/home/home' }) }
 function goLearn() { uni.redirectTo({ url: '/pages/learn/learn' }) }
 function goBattle() { uni.redirectTo({ url: '/pages/battle-match/battle-match' }) }
 function goRetryCheckin() { uni.redirectTo({ url: '/pages/quiz/quiz?mode=checkin' }) }

@@ -106,6 +106,10 @@ onLoad((query) => {
   if (query.edition) edition.value = query.edition
   const found = AI_OPPONENTS.find(o => o.id === opponentId.value)
   if (found) opponent.value = found
+  if (allWords.value.length === 0) {
+    uni.showModal({ title: '提示', content: '当前年级暂无单词数据，请切换年级后重试。', showCancel: false, success: () => { uni.navigateBack() } })
+    return
+  }
   generateQuestions()
   timerActive.value = true
 })
@@ -143,12 +147,12 @@ function confirmQuit() {
       content: '确定要退出对战吗？当前进度不会保存。',
       success: (res) => {
         if (res.confirm) {
-          uni.redirectTo({ url: '/pages/home/home' })
+          uni.switchTab({ url: '/pages/home/home' })
         }
       }
     })
   } else {
-    uni.redirectTo({ url: '/pages/home/home' })
+    uni.switchTab({ url: '/pages/home/home' })
   }
 }
 

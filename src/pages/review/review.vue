@@ -41,7 +41,7 @@ import LIcon from '@/components/LIcon.vue'
 
 const grade = ref(uni.getStorageSync('currentGrade') || 3)
 const edition = getEdition()
-const allWords = wordsDB[edition][grade.value] || []
+const allWords = wordsDB[edition]?.[grade.value] || []
 const stats = loadStats()
 const wrongIds = stats[`wrong_g${grade.value}_${edition}`] || []
 

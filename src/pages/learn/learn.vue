@@ -51,6 +51,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { onMounted } from '@dcloudio/uni-app'
 import { wordsDB } from '@/utils/words'
 import { getDaySeed, seededShuffle, getTodayKey } from '@/utils/helpers'
 import { loadStats, saveStats, saveLearnProgress } from '@/utils/storage'
@@ -60,28 +61,31 @@ import LIcon from '@/components/LIcon.vue'
 
 const grade = ref(uni.getStorageSync('currentGrade') || 3)
 const edition = getEdition()
-const allWords = wordsDB[edition][grade.value] || []
+const allWords = wordsDB[edition]?.[grade.value] || []
 const todaySeed = getDaySeed()
 const todayKey = getTodayKey(grade.value, edition)
 
 const stats = loadStats()
 
-// Restore daily word pool from storage so word order is stable across resumes
 let dailyWordPool = stats[todayKey + '_pool']
-if (!dailyWordPool) {
+if (!dailyWordPool || dailyWordPool.length === 0) {
   dailyWordPool = seededShuffle([...allWords], todaySeed).slice(0, 10)
   stats[todayKey + '_pool'] = dailyWordPool
   saveStats(stats)
 }
 
-// Already learned words (by word string)
 const learned = stats[todayKey] || []
-
 const currentIndex = ref(learned.length)
 
 const currentWord = computed(() => dailyWordPool[currentIndex.value] || { word: '', phonetic: '', meaning: '', sentence: '' })
 
 const animating = ref(false)
+
+onMounted(() => {
+  if (allWords.length === 0) {
+    uni.showModal({ title: '提示', content: '当前年级暂无单词数据，请切换年级后重试。', showCancel: false, success: () => { uni.navigateBack() } })
+  }
+})
 
 function triggerAnim() {
   animating.value = false
