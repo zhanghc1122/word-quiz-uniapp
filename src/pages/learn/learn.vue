@@ -50,8 +50,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { onMounted } from '@dcloudio/uni-app'
+import { ref, computed, onMounted } from 'vue'
 import { wordsDB } from '@/utils/words'
 import { getDaySeed, seededShuffle, getTodayKey } from '@/utils/helpers'
 import { loadStats, saveStats, saveLearnProgress } from '@/utils/storage'
