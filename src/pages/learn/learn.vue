@@ -84,6 +84,7 @@ const animating = ref(false)
 onMounted(() => {
   if (allWords.length === 0) {
     uni.showModal({ title: '提示', content: '当前年级暂无单词数据，请切换年级后重试。', showCancel: false, success: () => { uni.navigateBack() } })
+    return
   }
 })
 
